@@ -10,6 +10,7 @@ livemarkup.min.js: \
 	$(uglify) < $^ > $@
 
 size: livemarkup.min.js
+	@echo `cat livemarkup.js | wc -c` raw
 	@echo `cat $^ | wc -c` minified
 	@echo `cat $^ | gzip | wc -c` minified gzipped
 
