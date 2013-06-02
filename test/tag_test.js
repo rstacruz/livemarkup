@@ -10,7 +10,7 @@ describe('Test', function() {
     LM.register('hello', ml([
       "<span id='message'>",
       "  foo",
-      "  {{ html() -> 'hey there' }}",
+      "  {{ text() -> 'hey there' }}",
       "  bar",
       "</span>"
     ]));

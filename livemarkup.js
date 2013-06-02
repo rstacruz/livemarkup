@@ -9,7 +9,7 @@
   // ----------------------------------------------------------------------------
   //
   LM.tagSettings = {
-    tag: /\{\{([\s\S]+?)(?: -> ([\s\S]+?))?\}\}/g
+    tag: /\{\{([\s\S]+?)(?:\s+->\s+([\s\S]+?))?\}\}/g
   };
 
   // ----------------------------------------------------------------------------
@@ -106,9 +106,9 @@
         var matches = text.split(regex);
 
         // Put them all back in, in the same order, catching the tags.
+        var directive;
         _.each(matches, function(match, i) {
           var type = ['text', 'directives', 'code'][i % 3];
-          var directive;
 
           if (type === 'text') {
             appendText(parent, match);
@@ -136,26 +136,45 @@
   function Tag(node, src, formatter, template) {
     this.node = node;
     this.src = src;
-    this.formatter = formatter;
+    this.formatters = [new Function("return "+formatter)];
     this.template = template;
     this.getters = [];
-    this.context = new TagContext(this);
+    this.dsl = new TagContext(this);
     this.onrender = null;
   }
 
+  /**
+   * Returns the value of the current tag.
+   * The tag value is determined by some directives (like `attr`), and finally,
+   * fixed by the formatter.
+   */
+
   Tag.prototype.getValue = function() {
-    return '?';
+    var re;
+    var context = this.node.model;
+
+    _.each(this.formatters, function(fn) {
+      re = fn.call(context, re);
+    });
+
+    return re;
   };
 
   /**
+   * Applies directives to the tags.
    * @api private
    */
+
   Tag.prototype.parse = function() {
-    new Function('context', 'context.'+this.src);
+    var fn = new Function('dsl', 'dsl.'+this.src);
+    fn.apply(this, [this.dsl]);
   };
 
   Tag.prototype.render = function() {
     if (this.onrender) this.onrender();
+  };
+
+  Tag.prototype.addFormatter = function(fn) {
   };
 
   // ----------------------------------------------------------------------------
@@ -166,18 +185,67 @@
 
   function TagContext(tag) {
     this.tag = tag;
+    this.template = this.tag.template;
   }
 
   LM.directives = TagContext.prototype;
 
   // ----------------------------------------------------------------------------
 
-  LM.directives.html = function(tag, args) {
+  LM.directives.html = function() {
+    var tag = this.tag;
+
     tag.parent = $(tag.node).parent();
+
     tag.onrender = function() {
       tag.parent.html(tag.getValue());
     };
   };
+
+  LM.directives.text = function() {
+    var tag = this.tag;
+
+    tag.onrender = function() {
+      tag.node.nodeValue = tag.getValue();
+    };
+  };
+
+  /**
+   * Makes the current tag listen to a model event. When the event is fired,
+   * the tag is re-rendered.
+   */
+
+  LM.directives.on = function(model, event) {
+    if (!model) { event = model; model = null; }
+
+    var tag = this.tag;
+    var template = this.template;
+    if (!model) model = template.model;
+
+    // Error: listening without a model
+    if (!model) return;
+
+    model.on(event, function() { tag.render(); });
+  };
+
+  /**
+   * Makes the current tag listen to the change event of the `attr` in optional
+   * `model`. Also, makes the tag value get from them model attr.
+   */
+
+  LM.directives.attr = function(model, attr) {
+    if (!model) { attr = model; model = null; }
+
+    var tag = this.tag;
+    var template = this.template;
+    if (!model) model = template.model;
+
+    // FIXME not supporting multi-space
+    this.on(model, 'change:'+attr);
+    tag.addFormatter(function() { model.get(attr); });
+  };
+
+  LM.directives.visibleIf = function() {};
 
   // ----------------------------------------------------------------------------
   // Helpers
