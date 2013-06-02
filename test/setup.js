@@ -6,18 +6,21 @@ global.getFile = function(filepath) {
   return fs.readFileSync(path.resolve(__dirname, '..', filepath)).toString();
 };
 
-global.chai = require('chai');
-global.assert = chai.assert;
-chai.should();
+global.assert = require('chai').assert;
+global.expect = require('chai').expect;
+
+/* multiline */
+global.ml = function(list) {
+  return list.join("\n");
+};
 
 var jsdom = require('jsdom');
 
 function env(done) {
   jsdom.env({
-    html: '<!doctype html>',
+    html: '<!doctype html><html><head></head><body></body></html>',
     src: [
       getFile('test/vendor/jquery-1.9.1.js'),
-      getFile('test/vendor/coffee-script-1.6.2.js'),
       getFile('test/vendor/underscore-1.4.4.js'),
       getFile('test/vendor/backbone-1.0.0.js'),
       getFile('livemarkup.js')

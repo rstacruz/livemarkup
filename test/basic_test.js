@@ -4,6 +4,6 @@ describe("Livemarkup", function() {
   beforeEach(Setup.env);
 
   it("Should work", function() {
-    assert.equal('object', typeof LM);
+    assert.isObject(LM);
   });
 });
