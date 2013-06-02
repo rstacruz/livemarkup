@@ -4,13 +4,16 @@
 })(function($) {
 
   var LM = {};
-  var Templates, Tag;
-
   var templates = {};
 
+  // ----------------------------------------------------------------------------
+  //
   LM.tagSettings = {
-    tag: /\{\{([\s\S]+?)\}\}/g
+    tag: /\{\{([\s\S]+?)(?: -> ([\s\S]+?))?\}\}/g
   };
+
+  // ----------------------------------------------------------------------------
+  // LM methods
 
   /**
    * Registers a template.
@@ -35,44 +38,61 @@
 
     var code = templates[name];
     var html = $(el).html(code);
-    return new LM.template(html, el);
+    return new Template(html, el);
   };
+
+  // ----------------------------------------------------------------------------
 
   /**
    * Template.
    */
 
-  Template = LM.template = function($el) {
+  function Template($el) {
     this.$el = $el;
     this.model = null;
     this.locals = {};
-  };
+    this.tags = [];
+    this._initialized = false;
+  }
 
   Template.prototype.bind = function(object) {
     this.model = object;
     return this;
   };
 
+  Template.prototype.render = function() {
+    this.initialize();
+
+    _.each(this.tags, function(tag) {
+      tag.render();
+    });
+  };
+
   /**
    * Passes through the `$el` element, combs out the tags, and binds
    * appropriately.
+   *
+   * Called on first [Template#render()]. No need to call manually.
+   *
    * @api private
    */
 
   Template.prototype.initialize = function() {
-    this.tags = LM.parseTags(this.$el);
+    if (this._initialized) return;
+
+    this.tags = LM.fetchTags(this.$el, this);
+    _.each(this.tags, function(tag) { tag.parse(); });
+    this._initialized = true;
   };
 
-  Template.prototype.render = function() {
-    this.initialize();
-  };
+  // ----------------------------------------------------------------------------
 
   /**
-   * Returns a list of text tags.
+   * Gets a list of text tags. Returns an array of Tag instances.
    * @api private
    */
 
-  LM.parseTags = function($el) {
+  LM.fetchTags = function($el, template) {
     var tags = [];
     var regex = LM.tagSettings.tag;
 
@@ -87,13 +107,18 @@
 
         // Put them all back in, in the same order, catching the tags.
         _.each(matches, function(match, i) {
-          var isTag = (i % 2 === 1);
-          if (!isTag) {
+          var type = ['text', 'directives', 'code'][i % 3];
+          var directive;
+
+          if (type === 'text') {
             appendText(parent, match);
+          } else if (type === 'directives') {
+            directive = match;
           } else {
             var node = appendText(parent, "");
-            var tag = new Tag(node, match);
-            tags.push(node);
+
+            var tag = new Tag(node, directive, match, template);
+            tags.push(tag);
           }
         });
       });
@@ -102,15 +127,62 @@
     return tags;
   };
 
-  Tag = LM.Tag = function(node, src) {
+  // ----------------------------------------------------------------------------
+
+  /**
+   * A tag.
+   */
+
+  function Tag(node, src, formatter, template) {
     this.node = node;
     this.src = src;
+    this.formatter = formatter;
+    this.template = template;
+    this.getters = [];
+    this.context = new TagContext(this);
+    this.onrender = null;
+  }
+
+  Tag.prototype.getValue = function() {
+    return '?';
   };
 
-  return LM;
+  /**
+   * @api private
+   */
+  Tag.prototype.parse = function() {
+    new Function('context', 'context.'+this.src);
+  };
 
+  Tag.prototype.render = function() {
+    if (this.onrender) this.onrender();
+  };
+
+  // ----------------------------------------------------------------------------
+
+  /**
+   * DSL for tags.
+   */
+
+  function TagContext(tag) {
+    this.tag = tag;
+  }
+
+  LM.directives = TagContext.prototype;
+
+  // ----------------------------------------------------------------------------
+
+  LM.directives.html = function(tag, args) {
+    tag.parent = $(tag.node).parent();
+    tag.onrender = function() {
+      tag.parent.html(tag.getValue());
+    };
+  };
+
+  // ----------------------------------------------------------------------------
   // Helpers
-  // -------
+
+  return LM;
 
   /**
    * Iterates through each text node child of a given element.
@@ -126,7 +198,9 @@
 
   /**
    * Creates a text node and appends to a given parent.
+   * @api private
    */
+
   function appendText(parent, text) {
     var node = document.createTextNode(text);
     parent.appendChild(node);
