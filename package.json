@@ -19,7 +19,8 @@
     "mocha": "~1.10.0",
     "chai": "~1.6.0",
     "jsdom": "~0.6.5",
-    "supervisor": "~0.5.2"
+    "supervisor": "~0.5.2",
+    "uglify-js": "~2.3.6"
   },
   "license": "MIT"
 }

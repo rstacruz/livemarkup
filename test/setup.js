@@ -2,6 +2,11 @@ global.getFile = getFile;
 global.assert = require('chai').assert;
 global.expect = require('chai').expect;
 global.extend = require('util')._extend;
+global.inspect = inspect;
+
+module.exports = {
+  env: env
+};
 
 var jsdom = require('jsdom');
 function env(done) {
@@ -32,6 +37,7 @@ function getFile(filepath) {
   return fs.readFileSync(path.resolve(__dirname, '..', filepath)).toString();
 }
 
-module.exports = {
-  env: env
-};
+
+function inspect(obj) {
+  console.log('\n==> ', require('util').inspect(obj, { colors: true }));
+}

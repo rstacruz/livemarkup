@@ -7,7 +7,7 @@
   var templates = {};
 
   // ----------------------------------------------------------------------------
-  //
+
   LM.tagSettings = {
     tag: /\{\{([\s\S]+?)(?:\s+->\s+([\s\S]+?))?\}\}/g
   };
@@ -31,14 +31,25 @@
    * See: [LM.register()]
    */
 
-  LM.get = function(name, el) {
-    if (!(name in templates)) {
+  LM.get = function(name, element) {
+    if (!(name in templates))
       throw new Error("No such template: "+name);
-    }
 
+    // Get code.
     var code = templates[name];
-    var html = $(el).html(code);
-    return new Template(html, el);
+
+    // If it's a Backbone view, extract the element
+    var view;
+    if (element.el) { view = element; element = view.el; }
+
+    // Append the DOM into the element, then initialize the template.
+    var html = $(element).html(code);
+    var tpl = new Template(html);
+
+    // Register the view if needed.
+    if (view) tpl.locals({ view: view });
+
+    return tpl;
   };
 
   // ----------------------------------------------------------------------------
@@ -50,13 +61,14 @@
   function Template($el) {
     this.$el = $el;
     this.model = null;
-    this.locals = {};
+    this.localContext = {};
     this.tags = [];
     this._initialized = false;
   }
 
   Template.prototype.bind = function(object) {
     this.model = object;
+
     return this;
   };
 
@@ -66,6 +78,8 @@
     _.each(this.tags, function(tag) {
       tag.render();
     });
+
+    return this;
   };
 
   /**
@@ -83,6 +97,22 @@
     this.tags = LM.fetchTags(this.$el, this);
     _.each(this.tags, function(tag) { tag.parse(); });
     this._initialized = true;
+
+    return this;
+  };
+
+  /**
+   * Registers some variables as locals.
+   */
+  Template.prototype.locals = function(obj) {
+    if (typeof obj === 'object') {
+      _.extend(this.localContext, obj);
+    }
+    else if (arguments.length === 2) {
+      this.localContext[arguments[0]] = arguments[1];
+    }
+
+    return this;
   };
 
   // ----------------------------------------------------------------------------

@@ -9,8 +9,7 @@ describe('Test', function() {
   beforeEach(setParent);
 
   beforeEach(function() {
-    tpl = LM.get('hello', $parent);
-    tpl.render();
+    tpl = LM.get('hello', $parent).render();
   });
 
   // ----
@@ -25,6 +24,7 @@ describe('Test', function() {
 
   it('should have the right value', function() {
     assert.match($('#message').text(), /foo\s*hey there\s*bar/m);
+    inspect($('#message').text());
   });
 
   // -----

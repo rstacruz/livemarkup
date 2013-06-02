@@ -10,9 +10,7 @@ describe('Locals', function() {
   beforeEach(setView);
 
   beforeEach(function() {
-    tpl = LM.get('template_name', view.el);
-
-    tpl.locals.view = view;
+    tpl = LM.get('template_name', view);
 
     model = new Backbone.Model();
     tpl.bind(model);
@@ -21,7 +19,8 @@ describe('Locals', function() {
 
   // -----
 
-  it("should be fine", function() {
+  xit("should be fine", function() {
+    var txt = $("#message").text();
   });
 
   // -----
@@ -29,9 +28,7 @@ describe('Locals', function() {
   function registerTemplate() {
     LM.register('template_name', [
       "<span id='message'>",
-      "  before",
-      "  {{ on('eventname').text() -> 'hello ' + Math.random() }}",
-      "  after",
+      "  {{ text() -> view.name }}",
       "</span>"
     ].join(""));
   }
@@ -42,5 +39,6 @@ describe('Locals', function() {
 
   function setView() {
     view = new Backbone.View({ el: $parent });
+    view.name = "View name";
   }
 });
