@@ -1,5 +1,3 @@
-process.stdout.write('Starting test environment');
-
 global.getFile = function(filepath) {
   var path = require('path');
   var fs = require('fs');

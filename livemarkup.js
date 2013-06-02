@@ -192,6 +192,10 @@
 
   // ----------------------------------------------------------------------------
 
+  /**
+   * Changes the HTML of the tag's parent node.
+   */
+
   LM.directives.html = function() {
     var tag = this.tag;
 
@@ -200,7 +204,13 @@
     tag.onrender = function() {
       tag.parent.html(tag.getValue());
     };
+
+    return this;
   };
+
+  /**
+   * Changes the text of the tag's text node.
+   */
 
   LM.directives.text = function() {
     var tag = this.tag;
@@ -208,6 +218,8 @@
     tag.onrender = function() {
       tag.node.nodeValue = tag.getValue();
     };
+
+    return this;
   };
 
   /**
@@ -216,7 +228,7 @@
    */
 
   LM.directives.on = function(model, event) {
-    if (!model) { event = model; model = null; }
+    if (!event) { event = model; model = null; }
 
     var tag = this.tag;
     var template = this.template;
@@ -226,6 +238,8 @@
     if (!model) return;
 
     model.on(event, function() { tag.render(); });
+
+    return this;
   };
 
   /**
@@ -234,7 +248,7 @@
    */
 
   LM.directives.attr = function(model, attr) {
-    if (!model) { attr = model; model = null; }
+    if (!event) { attr = model; model = null; }
 
     var tag = this.tag;
     var template = this.template;
@@ -243,9 +257,9 @@
     // FIXME not supporting multi-space
     this.on(model, 'change:'+attr);
     tag.addFormatter(function() { model.get(attr); });
-  };
 
-  LM.directives.visibleIf = function() {};
+    return this;
+  };
 
   // ----------------------------------------------------------------------------
   // Helpers
