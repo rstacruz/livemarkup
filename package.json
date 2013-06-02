@@ -12,12 +12,14 @@
   },
   "main": "index",
   "scripts": {
-    "test": "./node_modules/.bin/mocha -R spec"
+    "test": "./node_modules/.bin/mocha -R spec",
+    "autotest": "./node_modules/.bin/supervisor -q -n exit -x ./node_modules/.bin/mocha -- -b"
   },
   "devDependencies": {
     "mocha": "~1.10.0",
     "chai": "~1.6.0",
-    "jsdom": "~0.6.5"
+    "jsdom": "~0.6.5",
+    "supervisor": "~0.5.2"
   },
   "license": "MIT"
 }

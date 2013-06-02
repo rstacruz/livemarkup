@@ -9,6 +9,8 @@ global.getFile = function(filepath) {
 global.assert = require('chai').assert;
 global.expect = require('chai').expect;
 
+global.extend = require('util')._extend;
+
 /* multiline */
 global.ml = function(list) {
   return list.join("\n");
@@ -26,9 +28,13 @@ function env(done) {
       getFile('livemarkup.js')
     ],
     done: function(errors, window) {
-      global.window = window;
-      global.$ = window.jQuery;
-      global.LM = window.LM;
+      window.console = console;
+      extend(global, {
+        window   : window,
+        Backbone : window.Backbone,
+        LM       : window.LM,
+        $        : window.$
+      });
       done(errors);
     }
   });

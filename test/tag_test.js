@@ -1,25 +1,35 @@
 var Setup = require('./setup');
 
-xdescribe('Test', function() {
+describe('Test', function() {
   beforeEach(Setup.env);
 
   var tpl;
+  var model;
 
   beforeEach(function() {
     LM.register('hello', ml([
       "<span id='message'>",
+      "  foo",
       "  {{ html() -> 'hey there' }}",
+      "  bar",
       "</span>"
     ]));
 
-    tpl = LM.get('hello');
+    tpl = LM.get('hello', $("<p>"));
+
+    model = new Backbone.Model();
+    tpl.bind(model);
   });
 
-  it('element', function() {
-    assert.property(tpl.el[0], 'nodeValue');
+  beforeEach(function() {
+    tpl.render();
   });
 
-  it('appendTo', function() {
-    tpl.appendTo($("<body>"));
+  it('.el', function() {
+    assert.property(tpl.$el[0], 'nodeType');
+  });
+
+  it('.lol', function() {
+    console.log(tpl.$el.html());
   });
 });
