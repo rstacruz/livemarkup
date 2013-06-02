@@ -181,6 +181,9 @@
 
   /**
    * DSL for tags.
+   * This is the context of which directives are applied to.
+   *
+   * @api private
    */
 
   function TagContext(tag) {
@@ -188,9 +191,10 @@
     this.template = this.tag.template;
   }
 
-  LM.directives = TagContext.prototype;
-
   // ----------------------------------------------------------------------------
+  // Directives
+
+  LM.directives = TagContext.prototype;
 
   /**
    * Changes the HTML of the tag's parent node.

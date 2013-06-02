@@ -1,21 +1,9 @@
-global.getFile = function(filepath) {
-  var path = require('path');
-  var fs = require('fs');
-  return fs.readFileSync(path.resolve(__dirname, '..', filepath)).toString();
-};
-
+global.getFile = getFile;
 global.assert = require('chai').assert;
 global.expect = require('chai').expect;
-
 global.extend = require('util')._extend;
 
-/* multiline */
-global.ml = function(list) {
-  return list.join("\n");
-};
-
 var jsdom = require('jsdom');
-
 function env(done) {
   jsdom.env({
     html: '<!doctype html><html><head></head><body></body></html>',
@@ -36,6 +24,12 @@ function env(done) {
       done(errors);
     }
   });
+}
+
+function getFile(filepath) {
+  var path = require('path');
+  var fs = require('fs');
+  return fs.readFileSync(path.resolve(__dirname, '..', filepath)).toString();
 }
 
 module.exports = {
