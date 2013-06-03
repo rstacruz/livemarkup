@@ -62,28 +62,29 @@
     this.$el = $el;
     this.model = null;
     this.localContext = {};
-    this.tags = [];
+    this.directives = [];
     this._initialized = false;
   }
 
-  Template.prototype.bind = function(object) {
-    this.model = object;
+  /**
+   * Sets the target model of the template to the given object.
+   */
+
+  Template.prototype.bind = function(model) {
+    this.model = model;
 
     return this;
   };
 
   Template.prototype.render = function() {
     this.initialize();
-
-    _.each(this.tags, function(tag) {
-      tag.render();
-    });
+    _.each(this.directives, function(dir) { dir.render(); });
 
     return this;
   };
 
   /**
-   * Passes through the `$el` element, combs out the tags, and binds
+   * Passes through the `$el` element, combs out the directives, and binds
    * appropriately.
    *
    * Called on first [Template#render()]. No need to call manually.
@@ -94,8 +95,7 @@
   Template.prototype.initialize = function() {
     if (this._initialized) return;
 
-    this.tags = LM.fetchTags(this.$el, this);
-    _.each(this.tags, function(tag) { tag.parse(); });
+    this.directives = LM.fetchDirectives(this.$el, this);
     this._initialized = true;
 
     return this;
@@ -108,6 +108,7 @@
     if (typeof obj === 'object') {
       _.extend(this.localContext, obj);
     }
+
     else if (arguments.length === 2) {
       this.localContext[arguments[0]] = arguments[1];
     }
@@ -122,176 +123,106 @@
    * @api private
    */
 
-  LM.fetchTags = function($el, template) {
-    var tags = [];
+  LM.fetchDirectives = function($el, template) {
+    var directives = [];
     var regex = LM.tagSettings.tag;
 
     $el.find('*').andSelf().each(function(i) {
       var parent = this;
 
-      eachTextNode(this, function(node, text) {
+      eachAttribute(this, function(name, value) {
+        var d = parseDirective(name, value);
+        if (!d) return;
 
-        // Remove the text nodes from the DOM, and parse out the tags.
-        parent.removeChild(node);
-        var matches = text.split(regex);
-
-        // Put them all back in, in the same order, catching the tags.
-        var directive;
-        _.each(matches, function(match, i) {
-          var type = ['text', 'directives', 'code'][i % 3];
-
-          if (type === 'text') {
-            appendText(parent, match);
-          } else if (type === 'directives') {
-            directive = match;
-          } else {
-            var node = appendText(parent, "");
-
-            var tag = new Tag(node, directive, match, template);
-            tags.push(tag);
-          }
-        });
+        d = new Directive(template, parent, d.action, d.param, d.value);
+        directives.push(d);
       });
     });
 
-    return tags;
+    return directives;
   };
 
   // ----------------------------------------------------------------------------
 
-  /**
-   * A tag.
-   */
-
-  function Tag(node, src, formatter, template) {
-    this.node = node;
-    this.src = src;
-    this.formatters = [new Function("return "+formatter)];
-    this.template = template;
-    this.getters = [];
-    this.dsl = new TagContext(this);
+  function Directive(template, el, action, param, value) {
+    this.$el = $(el);
     this.onrender = null;
+    this.template = template;
+    this.model = template.model;
+    this.getters = [];
+
+    // Apply the action
+    LM.actions[action].apply(this, [param]);
+
+    // Work the shit
+    var ctx = new Context(this);
+    var fn = new Function('ctx', 'ctx.' + value);
+    fn(ctx);
   }
 
   /**
-   * Returns the value of the current tag.
-   * The tag value is determined by some directives (like `attr`), and finally,
-   * fixed by the formatter.
+   * Returns the value of a given directive.
+   * Runs all the `getter` functions (as set by the modifiers) and returns the
+   * value.
    */
+  Directive.prototype.getValue = function() {
+    var dir = this;
 
-  Tag.prototype.getValue = function() {
-    var re;
-    var context = this.node.model;
+    return _.inject(this.getters, function(val, fn) {
+      return fn.apply(dir, [val]);
+    }, null);
+  };
 
-    _.each(this.formatters, function(fn) {
-      re = fn.call(context, re);
+  Directive.prototype.render = function() {
+    if (this.onrender)
+      this.onrender.apply(this);
+  };
+
+  // ----------------------------------------------------------------------------
+
+  LM.actions = {};
+
+  LM.actions.text = function() {
+    this.onrender = function() {
+      this.$el.text(this.getValue());
+    };
+  };
+
+  // ----------------------------------------------------------------------------
+
+  function Context(dir) {
+    this.directive = dir;
+  }
+
+  LM.mods = Context.prototype;
+
+  LM.mods.attr = function(model, name) {
+    var dir = this.directive;
+
+    if (!name) { name = model; model = null; }
+    if (!model) { model = dir.model; }
+    if (!model) { throw new Error("attr(): no model to bind to"); }
+
+    dir.getters.push(function() {
+      return dir.model.get(name);
     });
-
-    return re;
-  };
-
-  /**
-   * Applies directives to the tags.
-   * @api private
-   */
-
-  Tag.prototype.parse = function() {
-    var fn = new Function('dsl', 'dsl.'+this.src);
-    fn.apply(this, [this.dsl]);
-  };
-
-  Tag.prototype.render = function() {
-    if (this.onrender) this.onrender();
-  };
-
-  Tag.prototype.addFormatter = function(fn) {
-  };
-
-  // ----------------------------------------------------------------------------
-
-  /**
-   * DSL for tags.
-   * This is the context of which directives are applied to.
-   *
-   * @api private
-   */
-
-  function TagContext(tag) {
-    this.tag = tag;
-    this.template = this.tag.template;
-  }
-
-  // ----------------------------------------------------------------------------
-  // Directives
-
-  LM.directives = TagContext.prototype;
-
-  /**
-   * Changes the HTML of the tag's parent node.
-   */
-
-  LM.directives.html = function() {
-    var tag = this.tag;
-
-    tag.parent = $(tag.node).parent();
-
-    tag.onrender = function() {
-      tag.parent.html(tag.getValue());
-    };
-
     return this;
   };
 
-  /**
-   * Changes the text of the tag's text node.
-   */
+  LM.mods.on = function(model, name) {
+    var dir = this.directive;
 
-  LM.directives.text = function() {
-    var tag = this.tag;
+    if (!name) { name = model; model = null; }
+    if (!model) { model = dir.model; }
+    if (!model) { throw new Error("on(): no model to bind to"); }
 
-    tag.onrender = function() {
-      tag.node.nodeValue = tag.getValue();
-    };
-
+    model.on(name, function() { dir.render(); });
     return this;
   };
 
-  /**
-   * Makes the current tag listen to a model event. When the event is fired,
-   * the tag is re-rendered.
-   */
-
-  LM.directives.on = function(model, event) {
-    if (!event) { event = model; model = null; }
-
-    var tag = this.tag;
-    var template = this.template;
-    if (!model) model = template.model;
-
-    // Error: listening without a model
-    if (!model) return;
-
-    model.on(event, function() { tag.render(); });
-
-    return this;
-  };
-
-  /**
-   * Makes the current tag listen to the change event of the `attr` in optional
-   * `model`. Also, makes the tag value get from them model attr.
-   */
-
-  LM.directives.attr = function(model, attr) {
-    if (!event) { attr = model; model = null; }
-
-    var tag = this.tag;
-    var template = this.template;
-    if (!model) model = template.model;
-
-    // FIXME not supporting multi-space
-    this.on(model, 'change:'+attr);
-    tag.addFormatter(function() { model.get(attr); });
-
+  LM.mods.format = function(fn) {
+    var dir = this.directive;
+    dir.getters.push(fn);
     return this;
   };
 
@@ -301,15 +232,40 @@
   return LM;
 
   /**
-   * Iterates through each text node child of a given element.
+   * Iterates through each attribute of a given element.
    * @api private
    */
 
-  function eachTextNode(node, block) {
-    $(node).contents().each(function() {
-      if (this.nodeType !== 3) return;
-      block(this, this.nodeValue);
+  function eachAttribute(node, block) {
+    _.each(node.attributes, function(attr) {
+      block(attr.nodeName, attr.nodeValue);
     });
+  }
+
+  /**
+   * Parses a DOM Attribute (name/value pair) and returns an object hash.
+   * The hash has the following things:
+   *
+   *   - action  : name of action
+   *   - param   : params to be passed to action
+   *   - value   : the value getter (in JS code string)
+   *
+   * @api private
+   */
+  function parseDirective(name, value) {
+    var m = name.match(/^@([a-zA-Z0-9\_]+)$/);
+    if (!m) return;
+
+    var re = {};
+    re.action = m[1];
+    re.param = '';
+    re.value = value
+      .replace(/-> (.*)$/, function(_, fn) {
+        return '.format(function(val) { return ('+fn+'); })';
+      })
+     .replace(/^(\.+)/, '');
+
+    return re;
   }
 
   /**

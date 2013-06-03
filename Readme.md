@@ -1,6 +1,18 @@
 Livemarkup
 ==========
 
+Directives
+----------
+
+Every Livemarkup instruction is called a *directive*. A directive is comprised 
+of an action (left side, begins with `@`) and modifiers (right side).
+
+``` html
+<div @text="attr('description')">
+<div @text="-> Math.random()">
+<input @value="attr('title')">
+```
+
 Implementation
 --------------
 

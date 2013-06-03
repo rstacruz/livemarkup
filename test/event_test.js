@@ -19,23 +19,22 @@ describe('Events', function() {
   // ----
 
   it('initial value', function() {
-    assert.match($('#message').text(), /before\s*hello.*after/m);
+    assert.match($('#message').text(), /^hello.*/m);
   });
 
   it('changing', function() {
     var old = $('#message').text();
     model.trigger('eventname');
     var noo = $('#message').text();
+
+    assert.notEqual(old, noo);
   });
 
   // -----
 
   function registerTemplate() {
     LM.register('template_name', [
-      "<span id='message'>",
-      "  before",
-      "  {{ on('eventname').text() -> 'hello ' + Math.random() }}",
-      "  after",
+      '<span id="message" @text="on(\'eventname\') -> \'hello \' + Math.random()">',
       "</span>"
     ].join(""));
   }

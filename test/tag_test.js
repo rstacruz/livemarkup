@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-describe('Test', function() {
+describe('Basic tag test', function() {
   beforeEach(Setup.env);
 
   var tpl, $parent;
@@ -23,18 +23,14 @@ describe('Test', function() {
   });
 
   it('should have the right value', function() {
-    assert.match($('#message').text(), /foo\s*hey there\s*bar/m);
-    inspect($('#message').text());
+    assert.match($('#message').text(), /hey there/m);
   });
 
   // -----
 
   function registerTemplate() {
     LM.register('hello', [
-      "<span id='message'>",
-      "  foo",
-      "  {{ text() -> 'hey there' }}",
-      "  bar",
+      "<span id='message' @text='-> \"hey there\"'>",
       "</span>"
     ].join(""));
   }
