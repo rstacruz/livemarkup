@@ -5,31 +5,22 @@ describe('locals', function() {
 
   var tpl, model, $parent;
 
-  beforeEach(setParent);
+  beforeEach(function() {
+    $parent = $("<p class='paragraph'>")
+      .appendTo("body")
+      .html('<span id="message" @text="-> hello()"></span>');
+  });
 
   beforeEach(function() {
-    function hello() {
-      return "Hello there";
-    }
+    var hello = sinon.stub().returns("Hello there");
 
     tpl = new LM.template($parent)
       .locals({ hello: hello })
       .render();
   });
 
-  // ----
-
   it('initial value', function() {
     assert.match($('#message').text(), /Hello there/m);
   });
 
-  // -----
-
-  function setParent() {
-    $parent = $("<p class='paragraph'>")
-      .appendTo("body")
-      .html(
-        '<span id="message" @text="-> hello()">' +
-        "</span>");
-  }
 });
