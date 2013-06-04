@@ -8,7 +8,7 @@ describe('events', function() {
 
   beforeEach(function() {
     model = new Backbone.Model();
-    tpl = new LM.template($parent)
+    tpl = LM($parent)
       .bind(model)
       .render();
   });

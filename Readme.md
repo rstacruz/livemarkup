@@ -51,23 +51,24 @@ Livemarkup lets you define directives as plain HTML attributes in a template.
 Implementation
 --------------
 
-Register your template
-
-``` js
-LM.register("template", "<span>Hello</span>");
-```
-
-Now make a Backbone view
+Now make a Backbone view:
 
 ``` js
 Backbone.View.extend({
   render: function() {
-    this.template = LM.get("template", this)
+    this.html('...');
+    this.template = LM(this)
       .bind(this.model)
       .local({ x: true })
       .render();
   }
 });
+```
+
+or outside Backbone:
+
+``` js
+template = LM($element).render();
 ```
 
 Directives

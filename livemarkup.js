@@ -3,16 +3,22 @@
   else this.LM = lm;
 })(function($) {
 
-  var LM = {};
-  var templates = {};
+  /**
+   * Returns a template object.
+   *
+   *     var $div = $("...");
+   *     LM($div);
+   *
+   * `LM(element)` is an alias for `new LM.template(element)` -- see [Template]
+   * documentation for more details.
+   */
 
-  // ----------------------------------------------------------------------------
+  var LM = function(element) {
+    return new Template(element);
+  };
 
   /**
    * A template object representing a live DOM instance.
-   *
-   * Typically, you can get templates using the [LM.get()] system, but you can
-   * instanciate them yourself from an existing DOM node.
    *
    *   var $div = $("#my_template");
    *
@@ -51,6 +57,7 @@
 
   Template.prototype.bind = function(model) {
     this.model = model;
+
     return this;
   };
 
@@ -79,7 +86,7 @@
    */
 
   Template.prototype.initialize = function() {
-    this.directives = LM.fetchDirectives(this.$el, this);
+    this.directives = Template.fetchDirectives(this.$el, this);
 
     return this;
   };
@@ -113,7 +120,7 @@
    * @api private
    */
 
-  LM.fetchDirectives = function($el, template) {
+  Template.fetchDirectives = function($el, template) {
     var directives = [];
 
     $el.find('*').andSelf().each(function(i) {
@@ -246,7 +253,7 @@
     this.on(model, 'change:'+name);
 
     dir.getters.push(function() {
-      return dir.model.get(name);
+      return model.get(name);
     });
     return this;
   };

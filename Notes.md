@@ -3,23 +3,25 @@ Development notes
 
 Done:
 
- * html()
- * text()
- * on()
+ * actions.html()
+ * actions.text()
+ * actions.attr(model, 'attr')
+ * mods.on()
+ * Locals
 
 To do:
 
- * attr(model, 'attr')
- * Locals
-
- * value()
- * value() two way binding
-
- * setAttr()
- * toggleClass()
+ * Test for mods.format()
+ * actions.value()
+ * actions.value() two way binding
+ * actions.at()
+ * actions.class()
+ * actions.showIf()
+ * actions.each() array
+ * actions.each() collection
 
 Beyond:
 
- * each()
- * each collection
+ * actions.include()
+ * actions.subview()
 
