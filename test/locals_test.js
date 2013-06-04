@@ -1,11 +1,10 @@
 var Setup = require('./setup');
 
-describe('Locals', function() {
+describe('locals', function() {
   beforeEach(Setup.env);
 
   var tpl, model, $parent;
 
-  beforeEach(registerTemplate);
   beforeEach(setParent);
 
   beforeEach(function() {
@@ -13,7 +12,7 @@ describe('Locals', function() {
       return "Hello there";
     }
 
-    tpl = LM.get('template_name', $parent)
+    tpl = new LM.template($parent)
       .locals({ hello: hello })
       .render();
   });
@@ -26,14 +25,11 @@ describe('Locals', function() {
 
   // -----
 
-  function registerTemplate() {
-    LM.register('template_name', [
-      '<span id="message" @text="-> hello()">',
-      "</span>"
-    ].join(""));
-  }
-
   function setParent() {
-    $parent = $("<p class='paragraph'>").appendTo("body");
+    $parent = $("<p class='paragraph'>")
+      .appendTo("body")
+      .html(
+        '<span id="message" @text="-> hello()">' +
+        "</span>");
   }
 });

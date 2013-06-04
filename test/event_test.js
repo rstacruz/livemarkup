@@ -1,19 +1,16 @@
 var Setup = require('./setup');
 
-describe('Events', function() {
-  beforeEach(Setup.env);
-
+describe('events', function() {
   var tpl, model, $parent;
 
-  beforeEach(registerTemplate);
+  beforeEach(Setup.env);
   beforeEach(setParent);
 
   beforeEach(function() {
-    tpl = LM.get('template_name', $parent);
-
     model = new Backbone.Model();
-    tpl.bind(model);
-    tpl.render();
+    tpl = new LM.template($parent)
+      .bind(model)
+      .render();
   });
 
   // ----
@@ -32,14 +29,12 @@ describe('Events', function() {
 
   // -----
 
-  function registerTemplate() {
-    LM.register('template_name', [
-      '<span id="message" @text="on(\'eventname\') -> \'hello \' + Math.random()">',
-      "</span>"
-    ].join(""));
-  }
-
   function setParent() {
-    $parent = $("<p class='paragraph'>").appendTo("body");
+    $parent = $("<p class='paragraph'>")
+      .appendTo("body")
+      .html([
+        '<span id="message" @text="on(\'eventname\') -> \'hello \' + Math.random()">',
+        "</span>"
+      ].join(""));
   }
 });

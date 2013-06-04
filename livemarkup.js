@@ -8,54 +8,25 @@
 
   // ----------------------------------------------------------------------------
 
-  LM.tagSettings = {
-    tag: /\{\{([\s\S]+?)(?:\s+->\s+([\s\S]+?))?\}\}/g
-  };
-
-  // ----------------------------------------------------------------------------
-  // LM methods
-
   /**
-   * Registers a template.
+   * A template object representing a live DOM instance.
    *
-   *      LM.register('person/card', '<div>...</div>');
-   *      LM.get('person/card');
-   */
-
-  LM.register = function(name, code) {
-    templates[name] = code;
-  };
-
-  /**
-   * Returns a template.
-   * See: [LM.register()]
-   */
-
-  LM.get = function(name, element) {
-    if (!(name in templates))
-      throw new Error("No such template: "+name);
-
-    // Get code.
-    var code = templates[name];
-
-    // If it's a Backbone view, extract the element
-    var view;
-    if (element.el) { view = element; element = view.el; }
-
-    // Append the DOM into the element, then initialize the template.
-    var html = $(element).html(code);
-    var tpl = new Template(html);
-
-    // Register the view if needed.
-    if (view) tpl.locals({ view: view });
-
-    return tpl;
-  };
-
-  // ----------------------------------------------------------------------------
-
-  /**
-   * Template.
+   * Typically, you can get templates using the [LM.get()] system, but you can
+   * instanciate them yourself from an existing DOM node.
+   *
+   *   var $div = $("#my_template");
+   *
+   *   var tpl = new LM.template($div)
+   *    .bind(model)
+   *    .locals({ view: view })
+   *    .render();
+   *
+   * A template has the following properties as well:
+   *
+   *  - $el          : Element
+   *  - model        : Reference to the main model
+   *  - localContext : Locals
+   *  - directives   : Array of [Directive] instances
    */
 
   function Template($el) {
@@ -64,7 +35,15 @@
     this.localContext = {};
     this.directives = [];
     this._initialized = false;
+
+    // If it's a Backbone view
+    if ($el.$el) {
+      this.locals('view', $el);
+      this.$el = $el.$el;
+    }
   }
+
+  LM.template = Template;
 
   /**
    * Sets the target model of the template to the given object.
@@ -72,9 +51,16 @@
 
   Template.prototype.bind = function(model) {
     this.model = model;
-
     return this;
   };
+
+  /**
+   * Renders a template.
+   * Updates all directives within a template.
+   *
+   * In the first time a template is rendered, models will be bound, and
+   * directives will be removed from the DOM.
+   */
 
   Template.prototype.render = function() {
     this.initialize();
@@ -103,7 +89,14 @@
 
   /**
    * Registers some variables as locals.
+   *
+   *   tpl.locals({ view: myView });
+   *
+   * You can also use it with a pair:
+   *
+   *   tpl.locals('view', myView);
    */
+
   Template.prototype.locals = function(obj) {
     if (typeof obj === 'object') {
       _.extend(this.localContext, obj);
@@ -125,7 +118,6 @@
 
   LM.fetchDirectives = function($el, template) {
     var directives = [];
-    var regex = LM.tagSettings.tag;
 
     $el.find('*').andSelf().each(function(i) {
       var parent = this;
@@ -143,6 +135,10 @@
   };
 
   // ----------------------------------------------------------------------------
+
+  /**
+   * A directive.
+   */
 
   function Directive(template, el, action, param, value) {
     this.$el = $(el);
@@ -188,9 +184,11 @@
   LM.actions = {};
 
   LM.actions.text = function() {
-    this.onrender = function() {
-      this.$el.text(this.getValue());
-    };
+    this.onrender = function() { this.$el.text(this.getValue()); };
+  };
+
+  LM.actions.html = function() {
+    this.onrender = function() { this.$el.html(this.getValue()); };
   };
 
   // ----------------------------------------------------------------------------
@@ -198,6 +196,10 @@
   function Context(dir) {
     this.directive = dir;
   }
+
+  /**
+   * Modifiers.
+   */
 
   LM.mods = Context.prototype;
 
@@ -278,18 +280,6 @@
      .replace(/^(\.+)/, '');
 
     return re;
-  }
-
-  /**
-   * Creates a text node and appends to a given parent.
-   * @api private
-   */
-
-  function appendText(parent, text) {
-    var node = document.createTextNode(text);
-    parent.appendChild(node);
-
-    return node;
   }
 
 }(jQuery || Zepto || ender));

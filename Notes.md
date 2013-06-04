@@ -9,9 +9,8 @@ Done:
 
 To do:
 
- * attr() - proper formatters
-
- * Locals (tpl.locals.view = view)
+ * attr(model, 'attr')
+ * Locals
 
  * value()
  * value() two way binding
