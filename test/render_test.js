@@ -1,25 +1,29 @@
 var Setup = require('./setup');
 
 describe('render', function() {
-  var tpl, $parent;
+  var tpl, $parent, helper;
 
   beforeEach(Setup.env);
 
-  describe('simple', function() {
-    beforeEach(function() {
-      $parent = $("<p class='paragraph'>")
-        .html([
-          "<span id='message' @text='-> \"hey there\"'>",
-          "</span>"
-        ].join(''))
-        .appendTo("body");
+  beforeEach(function() {
+    helper = sinon.spy();
 
-      tpl = (new LM.template($parent)).render();
-    });
+    $parent = $("<p class='paragraph'>")
+      .appendTo("body")
+      .html("<span id='message' @text='-> helper()'></span>");
 
-    it('should have the right value', function() {
-      assert.match($('#message').text(), /hey there/m);
-    });
+    tpl = new LM.template($parent)
+      .locals({ helper: helper });
   });
 
+  it('rendered only once', function() {
+    tpl.render();
+    assert(helper.calledOnce);
+  });
+
+  it('rendered twice', function() {
+    tpl.render();
+    tpl.render();
+    assert(helper.calledTwice);
+  });
 });

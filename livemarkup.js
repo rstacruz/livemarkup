@@ -34,7 +34,7 @@
     this.model = null;
     this.localContext = {};
     this.directives = [];
-    this._initialized = false;
+    this.initialize = _.memoize(this.initialize);
 
     // If it's a Backbone view
     if ($el.$el) {
@@ -79,10 +79,7 @@
    */
 
   Template.prototype.initialize = function() {
-    if (this._initialized) return;
-
     this.directives = LM.fetchDirectives(this.$el, this);
-    this._initialized = true;
 
     return this;
   };
@@ -138,6 +135,12 @@
 
   /**
    * A directive.
+   *
+   * Has the following attributes:
+   *
+   *  - template     : instance of [Template]
+   *  - $el          : element to be worked on
+   *  - model        : model to be bound to (alias of [Template#model])
    */
 
   function Directive(template, el, action, param, value) {
@@ -163,9 +166,11 @@
 
   /**
    * Returns the value of a given directive.
+   *
    * Runs all the `getter` functions (as set by the modifiers) and returns the
-   * value.
+   * final value.
    */
+
   Directive.prototype.getValue = function() {
     var dir = this;
 
@@ -174,6 +179,10 @@
     }, null);
   };
 
+  /**
+   * Refreshes a directive by running its associated action.
+   */
+
   Directive.prototype.render = function() {
     if (this.onrender)
       this.onrender.apply(this);
@@ -181,11 +190,30 @@
 
   // ----------------------------------------------------------------------------
 
+  /**
+   * Actions.
+   */
+
   LM.actions = {};
+
+  /**
+   * Text changing action.
+   *
+   *   <div @text='attr("title")'>
+   */
 
   LM.actions.text = function() {
     this.onrender = function() { this.$el.text(this.getValue()); };
   };
+
+  /**
+   * HTML setting action.
+   *
+   * Works exactly like [LM.actions.text], but sets HTML instead.
+   *
+   *   <div @html='attr("title")'>
+   *   <div @html='-> getInstructionHTML()'>
+   */
 
   LM.actions.html = function() {
     this.onrender = function() { this.$el.html(this.getValue()); };
@@ -203,6 +231,10 @@
 
   LM.mods = Context.prototype;
 
+  /**
+   * Attribute modifier.
+   */
+
   LM.mods.attr = function(model, name) {
     var dir = this.directive;
 
@@ -210,11 +242,18 @@
     if (!model) { model = dir.model; }
     if (!model) { throw new Error("attr(): no model to bind to"); }
 
+    // FIXME doesn't support multi
+    this.on(model, 'change:'+name);
+
     dir.getters.push(function() {
       return dir.model.get(name);
     });
     return this;
   };
+
+  /**
+   * Event binding modifier.
+   */
 
   LM.mods.on = function(model, name) {
     var dir = this.directive;
@@ -223,7 +262,7 @@
     if (!model) { model = dir.model; }
     if (!model) { throw new Error("on(): no model to bind to"); }
 
-    model.on(name, function() { dir.render(); });
+    model.on(name, function() { dir.render(); }, dir.template);
     return this;
   };
 
@@ -240,6 +279,10 @@
 
   // ----------------------------------------------------------------------------
   // Helpers
+
+  /**
+   * Helpers
+   */
 
   LM.helpers = {};
 

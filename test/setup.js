@@ -2,6 +2,7 @@ global.getFile = getFile;
 global.assert = require('chai').assert;
 global.expect = require('chai').expect;
 global.extend = require('util')._extend;
+global.sinon = require('sinon');
 global.inspect = inspect;
 
 module.exports = {
