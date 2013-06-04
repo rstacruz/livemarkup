@@ -1,10 +1,9 @@
 var Setup = require('./setup');
 
 describe('Basic tag test', function() {
-  beforeEach(Setup.env);
-
   var tpl, $parent;
 
+  beforeEach(Setup.env);
   beforeEach(registerTemplate);
   beforeEach(setParent);
 

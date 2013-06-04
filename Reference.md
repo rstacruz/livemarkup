@@ -22,7 +22,6 @@ Directives:
     <div @html="attr('first_name') -> val.toUpperCase()">
 
     <textarea @value="attr('description')">
-    <textarea @value="attr('description')">
 
     <div @showIf="attr('premium')">
     <div @showIf="attr(user, 'premium')">

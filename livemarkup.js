@@ -154,10 +154,15 @@
     // Apply the action
     LM.actions[action].apply(this, [param]);
 
-    // Work the shit
+    // Build the runner
+    var code = 'ctx.' + value + ';';
+    code = 'with(helpers) { ' + code + ' }';
+    code = 'with(locals) { ' + code + ' }';
+    var fn = new Function('ctx', 'helpers', 'locals', code);
+
+    // Run it
     var ctx = new Context(this);
-    var fn = new Function('ctx', 'ctx.' + value);
-    fn(ctx);
+    fn(ctx, LM.helpers, template.localContext);
   }
 
   /**
@@ -222,12 +227,19 @@
 
   LM.mods.format = function(fn) {
     var dir = this.directive;
+
+    // Bind to model if need be.
+    var model = dir.model;
+    if (model) fn = $.proxy(fn, model);
+
     dir.getters.push(fn);
     return this;
   };
 
   // ----------------------------------------------------------------------------
   // Helpers
+
+  LM.helpers = {};
 
   return LM;
 
