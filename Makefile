@@ -1,16 +1,25 @@
 uglify := ./node_modules/.bin/uglifyjs -m --comments "/^!/"
 
 all: \
-	livemarkup.min.js
+	dist
+
+dist: \
+	dist/livemarkup.js \
+	dist/livemarkup.min.js \
+	size
 
 livemarkup.min.js: \
 	livemarkup.js
 
-%.min.js: %.js
+dist/%.min.js: %.js
 	$(uglify) < $^ > $@
 
-size: livemarkup.min.js
-	@echo `cat livemarkup.js | wc -c` raw
+dist/%: %
+	mkdir -p dist/
+	cp $^ $@
+
+size: dist/livemarkup.min.js
+	@echo `cat dist/livemarkup.js | wc -c` raw
 	@echo `cat $^ | wc -c` minified
 	@echo `cat $^ | gzip | wc -c` minified gzipped
 

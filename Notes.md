@@ -8,11 +8,12 @@ Done:
  * actions.attr(model, 'attr')
  * mods.on()
  * Locals
+ * Directive#stop()
+ * actions.html not continuing
 
 To do:
 
  * actions.if()
- * Directive#stop()
  * actions.each() array
  * actions.each() collection
 

@@ -23,12 +23,11 @@
   /**
    * A template object representing a live DOM instance.
    *
-   *   var $div = $("#my_template");
-   *
-   *   var tpl = new LM.template($div)
-   *    .bind(model)
-   *    .locals({ view: view })
-   *    .render();
+   *     var $div = $("#my_template");
+   *     var tpl = new LM.template($div)
+   *      .bind(model)
+   *      .locals({ view: view })
+   *      .render();
    */
 
   function Template($el) {
@@ -111,11 +110,11 @@
   /**
    * Registers some variables as locals.
    *
-   *   tpl.locals({ view: myView });
+   *     tpl.locals({ view: myView });
    *
-   * You can also use it with a pair:
+   * You can also use it with a key/value pair:
    *
-   *   tpl.locals('view', myView);
+   *     tpl.locals('view', myView);
    */
 
   Template.prototype.locals = function(obj) {
@@ -240,15 +239,16 @@
    * Actions.
    */
 
-  LM.actions = {};
+  var Actions = {};
+  LM.actions = Actions;
 
   /**
    * Text changing action.
    *
-   *   <div @text='attr("title")'>
+   *     <div @text='attr("title")'>
    */
 
-  LM.actions.text = function() {
+  Actions.text = function() {
     this.onrender = function() { this.$el.text(this.getValue()); };
   };
 
@@ -257,11 +257,11 @@
    *
    * Works exactly like [LM.actions.text], but sets HTML instead.
    *
-   *   <div @html='attr("title")'>
-   *   <div @html='-> getInstructionHTML()'>
+   *     <div @html='attr("title")'>
+   *     <div @html='-> getInstructionHTML()'>
    */
 
-  LM.actions.html = function() {
+  Actions.html = function() {
     this.stop();
     this.onrender = function() { this.$el.html(this.getValue()); };
   };
@@ -274,15 +274,43 @@
 
   /**
    * Modifiers.
+   *
+   * You can access the modifiers as:
+   *
+   *     LM.modifiers
+   *
+   * This hosts a bunch of *modifier* functions. Each modifier function is:
+   *
+   *  - ran on the context of an object that has one attribute: `directive`,
+   *  which hosts the directive.
+   *
+   *  - always does `return this` at the end so they can be chained.
+   *
+   *  - usually uses `.format()` to make a getter.
+   *
+   * You can implement your own modifiers like this example here:
+   *
+   *     LM.modifiers['greet'] = function(name) {
+   *       var dir = this.directive;     // a `Directive` object
+   *       var model = dir.model;
+   *       this.format(function() {      // Make it do the same as `-> "hello world"`
+   *         return "Hello world";
+   *       });
+   *       return this;
+   *     }
    */
 
-  LM.mods = Context.prototype;
+  var Modifiers = Context.prototype;
+  LM.modfiers = Modifiers;
 
   /**
    * Attribute modifier.
+   *
+   * This is actually a macro that expands to a `.on()` (to listen for change
+   * events) and a `.format()` (to do `model.get()`).
    */
 
-  LM.mods.attr = function(model, name) {
+  Modifiers.attr = function(model, name) {
     var dir = this.directive;
 
     if (!name) { name = model; model = null; }
@@ -291,10 +319,8 @@
 
     // FIXME doesn't support multi
     this.on(model, 'change:'+name);
+    this.format(function() { return model.get(name); });
 
-    dir.getters.push(function() {
-      return model.get(name);
-    });
     return this;
   };
 
@@ -302,7 +328,7 @@
    * Event binding modifier.
    */
 
-  LM.mods.on = function(model, name) {
+  Modifiers.on = function(model, name) {
     var dir = this.directive;
 
     if (!name) { name = model; model = null; }
@@ -313,7 +339,7 @@
     return this;
   };
 
-  LM.mods.format = function(fn) {
+  Modifiers.format = function(fn) {
     var dir = this.directive;
 
     // Bind to model if need be.
