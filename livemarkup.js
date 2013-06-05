@@ -494,7 +494,7 @@
    * @api private
    */
   function parseDirective(name, value) {
-    var m = name.match(/^@([a-zA-Z0-9\_]+)(?:\(([^\)]+)\))$/);
+    var m = name.match(/^@([a-zA-Z0-9\_]+)(?:\(([^\)]+)\))?$/);
     if (!m) return;
 
     var re = {};
