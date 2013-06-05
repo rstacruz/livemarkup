@@ -4,11 +4,19 @@ Livemarkup
 Livemarkup lets you define directives as plain HTML attributes in a template. It
 supports model binding and some fancy doodads.
 
-It's built with Backbone.js in mind and makes your web coding life so much fun. It's extremely small, too, like 1kb after gzipped so it's crazy awesome.
+It's built with Backbone.js in mind and makes your web coding life so much fun.
+It's extremely small, too, like 1kb after gzipped so it's crazy awesome.
 
 [Download >]( http://raw.github.com/rstacruz/livemarkup/livemarkup.js ) *work in progress -- use at your own risk*
 
-## Quick reference
+#### Here be dragons
+
+**Livemarkup is still not feature-complete.** Try it out now, but don't expect
+all features to be implemented.  See the [development notes] to see what works
+and what doesn't.
+
+Quick reference
+---------------
 
 Livemarkup is not a templating language per se. It takes a DOM tree, parses
 directives out of it, and performs the behavior it describes. In essence, it
@@ -100,8 +108,8 @@ It even has explicit support for Backbone Collections which reacts to `add`,
 </ul>
 ~~~
 
-Implementation
---------------
+How to implement
+----------------
 
 ### Dependencies
 
@@ -140,6 +148,21 @@ the same way.
 ~~~ js
 $element = $("...");
 template = LM($element).render();
+~~~
+
+### Reference
+
+To instanciate, you probably need these:
+
+* [bind()]( #template-bind ) -- Defines a model object to bind events to.
+* [locals()]( #template-locals ) -- Defines helpers and locals.
+* [render()]( #template-render ) -- Transforms the DOM and runs directives.
+
+~~~ js
+this.template = LM(element OR view)
+  .bind(model)
+  .locals({ var1: var1 })
+  .render();
 ~~~
 
 Directives
@@ -278,8 +301,32 @@ Creates a template object.
 
 ### Template#bind()
 
+To be written.
+
+# Misc
+
+Acknowledgements
+----------------
+
+© 2013, Rico Sta. Cruz. Released under the [MIT License].
+
+**Livemarkup** is authored and maintained by [Rico Sta. Cruz] with help
+from its [contributors]. It is sponsored by my startup, [Nadarei, Inc.]
+
+[My website] - [Nadarei, Inc.] - [Github/rstacruz][gh] - [Twitter @rstacruz][tw]
+
+[MIT License]: http://www.opensource.org/licenses/mit-license.php
+[Rico Sta. Cruz]: http://ricostacruz.com
+[contributors]: http://github.com/rstacruz/livemarkup/contributors
+[Nadarei, Inc.]: http://nadarei.co
+
+[My website]: http://ricostacruz.com
+[gh]: https://github.com/rstacruz
+[tw]: https://twitter.com/rstacruz
+
 [listenTo()]: http://backbonejs.org/#Events-listenTo
 [Underscore.js]: http://underscorejs.org
 [Zepto]: http://zeptojs.com
 [jQuery]: http://jquery.com
 [Backbone.js]: http://backbonejs.org
+[development notes]: https://raw.github.com/rstacruz/livemarkup/master/Notes.md
