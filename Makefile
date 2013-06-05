@@ -12,7 +12,7 @@ livemarkup.min.js: \
 	livemarkup.js
 
 dist/%.min.js: %.js
-	$(uglify) < $^ > $@
+	$(uglify) $^ --source-map $@.map > $@
 
 dist/%: %
 	mkdir -p dist/
