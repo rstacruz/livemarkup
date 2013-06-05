@@ -39,7 +39,7 @@ function inspect(obj) {
  */
 
 function multi(name, fn) {
-  ['jquery-1.9.1', 'zepto-1.0'].forEach(function(lib) {
+  ['jquery-1.9.1', 'jquery-1.10.1', 'zepto-1.0'].forEach(function(lib) {
     describe(lib, function() {
       beforeEach(customEnv({ jquery: lib }));
       describe(name, fn);
