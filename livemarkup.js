@@ -300,9 +300,11 @@
    */
 
   Actions.text = function() {
-    this.onrender = function() {
-      this.$el.text(this.getValue());
-    };
+    // There's no need to parse out any directives inside it: they will be
+    // obliterated anyway.
+    this.stop();
+
+    this.onrender = function() { this.$el.text(this.getValue()); };
   };
 
   /**
