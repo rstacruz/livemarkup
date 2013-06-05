@@ -284,6 +284,10 @@
   };
 
   Actions.if = function() {
+    this.stop();
+
+    var template = this.template;
+
     // Create a placeholder empty text code so we know where to ressurrent the
     // element later on.
     var $holder = $(createTextNodeAfter(this.$el));
@@ -294,8 +298,15 @@
     this.onrender = function() {
       if (this.getValue()) {
         $holder.after($el);
+
+        // FIXME need to bind and unbind
+        this.sub = LM($el).locals(template.localContext).bind(template.model);
+        this.sub.render();
       }
-      else $el.remove();
+      else {
+        // if (this.sub) this.sub.destroy();
+        $el.remove();
+      }
     };
   };
 
