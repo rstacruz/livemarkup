@@ -1,28 +1,14 @@
 var Setup = require('./setup');
 
 describe('attr()', function() {
-  var tpl, $parent, model;
+  var tpl, $el, model;
 
   beforeEach(Setup.env);
-
-  beforeEach(function() {
-    model = {
-      on: sinon.spy(),
-      get: sinon.stub().returns("Title here")
-    };
-  });
-
-  // ----
+  beforeEach(setModel);
 
   describe('attr("name")', function() {
     beforeEach(function() {
-      $parent = $("<p class='paragraph'>")
-        .html("<span id='message' @text='attr(\"title\")'></span>")
-        .appendTo("body");
-
-      tpl = new LM.template($parent)
-        .bind(model)
-        .render();
+      render("<span id='message' @text='attr(\"title\")'></span>");
     });
 
     it('on() is called', function() {
@@ -48,13 +34,7 @@ describe('attr()', function() {
 
   describe('attr(model, "name")', function() {
     beforeEach(function() {
-      $parent = $("<p class='paragraph'>")
-        .html("<span id='message' @text='attr(doc, \"title\")'></span>")
-        .appendTo("body");
-
-      tpl = LM($parent)
-        .locals({ doc: model })
-        .render();
+      render("<span id='message' @text='attr(doc, \"title\")'></span>");
     });
 
     it('on() is called', function() {
@@ -66,17 +46,27 @@ describe('attr()', function() {
 
   describe('attr("name") no model', function() {
     beforeEach(function() {
-      $parent = $("<p class='paragraph'>")
-        .html("<span id='message' @text='attr(\"title\")'></span>")
-        .appendTo("body");
-
-      tpl = LM($parent);
+      $el = $("<span id='message' @text='attr(\"title\")'></span>");
     });
 
     it('render() throws an error', function() {
       assert.throws(function() {
-        tpl.render();
+        LM($el).render();
       }, /no model/);
     });
   });
+
+  // -----
+
+  function setModel() {
+    model = {
+      on: sinon.spy(),
+      get: sinon.stub().returns("Title here")
+    };
+  };
+
+  function render(html) {
+    $el = $("<div>").html(html).appendTo('body');
+    tpl = LM($el).locals({ doc: model }).bind(model).render();
+  }
 });
