@@ -120,20 +120,24 @@
    * @api private
    */
 
-  Template.fetchDirectives = function($el, template) {
+  Template.fetchDirectives = function(root, template) {
     var directives = [];
 
-    $el.find('*').andSelf().each(function(i) {
-      var parent = this;
-
-      eachAttribute(this, function(name, value) {
+    function walk(parent) {
+      eachAttribute(parent, function(name, value) {
         var d = parseDirective(name, value);
         if (!d) return;
 
         d = new Directive(template, parent, d.action, d.param, d.value);
         directives.push(d);
       });
-    });
+
+      _.each(parent.children, function(child) {
+        if (child.nodeType === 1) walk(child);
+      });
+    }
+
+    walk(root.nodeName ? root : root[0]);
 
     return directives;
   };
