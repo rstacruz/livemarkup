@@ -14,23 +14,24 @@ Done:
  * actions.if()
  * actions.at()
  * actions.class()
+ * actions.value()
+ * actions.value() two way binding
 
 To do:
 
  * actions.each() array
  * actions.each() collection
-
- * actions.value()
- * actions.value() two way binding
-
-Easy na lang:
-
- * actions.showIf()
- * Test for mods.format()
- * Test for LM.helpers
+ * attr('a1 a2')
 
 Beyond (need design decisions):
 
  * actions.run()
  * actions.subview()
+
+---
+
+Tests to do:
+
+ * Test for mods.format()
+ * Test for LM.helpers
 

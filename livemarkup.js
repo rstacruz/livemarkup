@@ -337,11 +337,41 @@
    */
 
   Actions.html = function() {
+    // There's no need to parse out any directives inside it: they will be
+    // obliterated anyway.
     this.stop();
+
     this.onrender = function() {
       this.$el.html(this.getValue());
     };
   };
+
+  Actions.value = function() {
+    var dir = this;
+    var template = this.template;
+    var onchange;
+
+    this.onrender = function() {
+      dir.$el.val(dir.getValue());
+
+      if (dir.attrib && !dir.bound) {
+        dir.bound = true;
+        dir.$el.on('change', onchange = function(e, v) {
+          dir.attrib.model.set(dir.attrib.field, $(this).val());
+        });
+      }
+    };
+
+    template.on('destroy', function() {
+      dir.$el.off('change', onchange);
+    });
+  };
+
+  /**
+   * Makes the element present if the value is `true`, and hides it if `false`.
+   *
+   *     <div @if='attr("enabled")'>...</div>
+   */
 
   Actions.if = function() {
     this.stop();
@@ -424,6 +454,11 @@
     if (!name) { name = model; model = null; }
     if (!model) { model = dir.model; }
     if (!model) { throw new Error("attr(): no model to bind to"); }
+
+    // Leave a message for `@value` to pick up
+    if (!dir.attrib) {
+      dir.attrib = { model: model, field: name };
+    }
 
     // FIXME doesn't support multi
     this.on(model, 'change:'+name);
