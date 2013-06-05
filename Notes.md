@@ -45,3 +45,8 @@ Tests to do:
  * Test for mods.format()
  * Test for LM.helpers
 
+----
+
+Not sure on how it works:
+
+ * obj to model binding

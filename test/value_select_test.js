@@ -29,6 +29,16 @@ describe('@value() select', function() {
     assert.equal($("select").val(), 'one');
   });
 
+  it("reverse binding", function() {
+    model.set('number', 'one');
+    sinon.spy(model, 'set');
+
+    $('select').val('three').trigger('change');
+
+    assert.equal(model.get('number'), 'three');
+    assert(model.set.calledOnce);
+  });
+
   // ---
 
   function render(str) {
