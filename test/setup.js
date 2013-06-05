@@ -25,7 +25,8 @@ function env(done) {
         window   : window,
         Backbone : window.Backbone,
         LM       : window.LM,
-        $        : window.$
+        $        : window.$,
+        _        : window._
       });
       done(errors);
     }

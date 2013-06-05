@@ -21,6 +21,12 @@ To do:
 
  * actions.each() array
  * actions.each() collection
+ * actions.each() - on add
+ * actions.each() - on remove
+ * actions.each() - on sort
+ * actions.each() - on reset
+ * actions.each() - on destroy
+
  * attr('a1 a2')
  * actions.options()
  * actions.optgroups()

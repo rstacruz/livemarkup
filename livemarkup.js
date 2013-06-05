@@ -39,6 +39,7 @@
 
     // If it's a Backbone view
     if ($el.$el) {
+      this.view = $el;
       this.locals('view', $el);
       this.$el = $el.$el;
     }
@@ -63,6 +64,12 @@
    */
 
   Template.prototype.model = null;
+
+  /**
+   * Backbone view associated.
+   */
+
+  Template.prototype.view = null;
 
   /**
    * The local context as modified using [Template#locals()].
@@ -481,14 +488,28 @@
 
   Modifiers.on = function(model, name) {
     var dir = this.directive;
+    var template = dir.template;
+    var view = template.view;
 
     if (!name) { name = model; model = null; }
     if (!model) { model = dir.model; }
     if (!model) { throw new Error("on(): no model to bind to"); }
 
+    // The callback to run when a model's event is triggered.
     var fn = function() { dir.render(); };
-    model.on(name, fn);
-    dir.template.on('destroy', function() { model.off(name, fn); });
+
+    // If a view is available, use Backbone's `listenTo()` facility so that
+    // removing a view will stop any events.
+    if (view) {
+      view.listenTo(model, name, fn);
+      dir.template.on('destroy', function() { view.stopListening(model, name, fn); });
+    }
+    
+    // Otherwise, listen normally as you would.
+    else {
+      model.on(name, fn);
+      dir.template.on('destroy', function() { model.off(name, fn); });
+    }
 
     return this;
   };

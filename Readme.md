@@ -74,6 +74,7 @@ Backbone.View.extend({
       .local({ x: true })
       .render();
   }
+
 });
 ~~~
 
