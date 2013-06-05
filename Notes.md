@@ -10,10 +10,11 @@ Done:
  * Locals
  * Directive#stop()
  * actions.html not continuing
+ * Template#destroy()
+ * actions.if()
 
 To do:
 
- * actions.if()
  * actions.each() array
  * actions.each() collection
 

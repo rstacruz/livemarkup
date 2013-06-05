@@ -35,7 +35,7 @@
     this.initialize = _.memoize(this.initialize);
     this.directives = [];
     this.localContext = {};
-    this.events = $({});
+    this.events = $({}); // Event emitter for `.on()` and `.trigger()`
 
     // If it's a Backbone view
     if ($el.$el) {
@@ -148,7 +148,6 @@
 
   Template.prototype.destroy = function() {
     this.trigger('destroy');
-
     return this;
   };
 
