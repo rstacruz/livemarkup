@@ -54,6 +54,7 @@
 
   /**
    * Array of [Directive] instances.
+   * @api private
    */
 
   Template.prototype.directives = null;
@@ -65,19 +66,27 @@
   Template.prototype.model = null;
 
   /**
-   * Backbone view associated.
+   * The associated Backbone view when instanciated via `LM(view)`.
+   *
+   *     var view = new Backbone.View();
+   *     var tpl = LM(view);
+   *     // tpl.view === view
    */
 
   Template.prototype.view = null;
 
   /**
    * The local context as modified using [Template#locals()].
+   * @api private
    */
 
   Template.prototype.localContext = null;
 
   /**
    * Sets the target model of the template to the given object.
+   *
+   *     var model = new Backbone.Model();
+   *     LM($element).bind(model);
    */
 
   Template.prototype.bind = function(model) {
@@ -86,12 +95,24 @@
     return this;
   };
 
-  // Let's reuse $el as an event emitter because (1) we don't want a
-  // Backbone.Events dependency, (2) `jQuery({})` doesn't work on Zepto.
+  /**
+   * Listens to an event. Usually used as `.on('destroy')` to attach teardown
+   * behavior in actions/modifiers.
+   */
+
   Template.prototype.on = function() {
-    // Legacy jQuery support
+    // Let's reuse $el as an event emitter because (1) we don't want a
+    // Backbone.Events dependency, (2) `jQuery({})` doesn't work on Zepto.
+    //
+    // Also, legacy jQuery support (.bind).
+    //
     (this.$el.on || this.$el.bind).apply(this.$el, arguments);
   };
+
+  /**
+   * Triggers an event to be caught by `.on()`. See [Template#on()].
+   * @api private
+   */
 
   Template.prototype.trigger = function() {
     this.$el.trigger.apply(this.$el, arguments);
@@ -152,7 +173,12 @@
   /**
    * Cleans up and unbinds all events, rendering the template inert.
    *
-   * This undoes everything that an [Action] does.
+   * This undoes everything that the [Action]s and [Modifier]s do.
+   *
+   *     tpl = LM($element);
+   *     // ...
+   *     tpl.destroy();
+   *     tpl.$el.remove();
    */
 
   Template.prototype.destroy = function() {
@@ -206,6 +232,9 @@
    *  - template     : instance of [Template]
    *  - $el          : element to be worked on
    *  - model        : model to be bound to (alias of [Template#model])
+   *
+   * Actions are ran in the context of an instance of this. Modifiers have
+   * access to the directive using `this.directive`.
    */
 
   function Directive(template, el, action, param, value) {
@@ -255,6 +284,10 @@
 
   /**
    * Stops processing down.
+   *
+   * This prevents the parser from recursing down to the children. Useful for
+   * actions where the rest of the block doesn't matter, like `@html` or
+   * `@text` (but not `@class` or `@at`).
    */
 
   Directive.prototype.stop = function() {
@@ -264,8 +297,8 @@
   /**
    * Returns the value of a given directive.
    *
-   * Runs all the `getter` functions (as set by the modifiers) and returns the
-   * final value.
+   * Runs all the `formatters` functions (as set by the modifiers) and returns
+   * the final value.
    */
 
   Directive.prototype.getValue = function() {
