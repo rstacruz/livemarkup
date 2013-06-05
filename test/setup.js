@@ -39,17 +39,23 @@ function inspect(obj) {
  */
 
 function multi(name, fn) {
-  var versions = ['jquery-1.9.1'];
-
-  if (process.env.full)
-    versions = ['jquery-1.9.1', 'jquery-1.10.1', 'jquery-1.5.2', 'zepto-1.0'];
-
-  versions.forEach(function(lib) {
-    describe(lib, function() {
-      beforeEach(customEnv({ jquery: lib }));
-      describe(name, fn);
+  // Run in just the default environment
+  if (!process.env.full) {
+    describe(name, function() {
+      beforeEach(customEnv({ jquery: 'jquery-1.9.1' }));
+      fn.apply(this);
     });
-  });
+  }
+
+  else {
+    var versions = ['jquery-1.9.1', 'jquery-1.10.1', 'jquery-1.5.2', 'zepto-1.0'];
+    versions.forEach(function(jq) {
+      describe(jq, function() {
+        beforeEach(customEnv({ jquery: jq }));
+        describe(name, fn);
+      });
+    });
+  }
 }
 
 /**
