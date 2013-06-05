@@ -33,8 +33,6 @@ describe('@value()', function() {
     assert.equal(model.get('name'), 'John');
   });
 
-  // ---
-
   beforeEach(function() {
     model = new Backbone.Model({ name: "John" });
   });

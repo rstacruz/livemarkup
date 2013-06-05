@@ -365,14 +365,30 @@
     var dir = this;
     var template = this.template;
     var onchange;
+    var scope = dir.$el;
+
+    // For things that have multiple, you need to array'ify your values.
+    var isMulti = scope.is(':radio,:checkbox,select[multiple]');
+
+    // For multiples, make it work with its bretheren as well
+    if (scope.is(':radio,:checkbox')) {
+      var name = scope.attr('name');
+      scope = scope.closest('form,:root').find('[name="'+name+'"]');
+    }
 
     this.onrender = function() {
-      dir.$el.val(dir.getValue());
+      // Get the value and transform it if need be.
+      val = dir.getValue();
+      if (isMulti && !_.isArray(val)) val = [val];
 
+      // Set the value.
+      scope.val(val);
+
+      // Bind an onchange.
       if (dir.attrib && !dir.bound) {
         dir.bound = true;
-        dir.$el.on('change', onchange = function(e, v) {
-          dir.attrib.model.set(dir.attrib.field, $(this).val());
+        scope.on('change', onchange = function(e, v) {
+          dir.attrib.model.set(dir.attrib.field, scope.val());
         });
       }
     };

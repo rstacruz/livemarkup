@@ -27,6 +27,8 @@ To do:
  * actions.each() - on reset
  * actions.each() - on destroy
 
+ * @value for checkboxes
+ * @value for radios
  * attr('a1 a2')
  * actions.options()
  * actions.optgroups()
