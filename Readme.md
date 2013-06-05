@@ -4,55 +4,100 @@ Livemarkup
 Livemarkup lets you define directives as plain HTML attributes in a template. It
 supports model binding and some fancy doodads.
 
+It's built with Backbone.js in mind and makes your web coding life so much fun. It's extremely small, too, like 1kb after gzipped so it's crazy awesome.
+
+[Download >]( http://raw.github.com/rstacruz/livemarkup/livemarkup.js ) *work in progress -- use at your own risk*
+
+## Quick reference
+
+Livemarkup is not a templating language per se. It takes a DOM tree, parses
+directives out of it, and performs the behavior it describes. In essence, it
+lets you write your client-side templates using plain HTML.
+
+~~~ html
+<!-- use arbitrary JS to set text (does not auto-update) -->
+<span @text='-> model.getFirstName()'>
+<span @text='-> parseInt(Math.random()*6)'>
+~~~
+
+#### Model-to-DOM binding
+Livemarkup is built to be reactive -- it also allows you to bind to Backbone
+model attributes. The DOM updates in real time (because it's *live markup!*) as
+model attributes are changed.
+
 ~~~ html
 <!-- sets text to the `first_name` attribute of a model. -->
 <!-- auto-updates when `first_name` is changed. -->
 <span @text='attr("first_name")'>
 
-<!-- use arbitrary JS to set text (does not auto-update) -->
-<span @text='-> model.getFirstName()'>
-<span @text='-> parseInt(Math.random()*6)'>
-
 <!-- custom helpers -->
-<span @text='attr("first_name") -> val.toUpperCase()'>
-<span @text='attr("balance") -> formatMoney(val)'>
+<span @text='attr("lastname") -> val.toUpperCase()'>
+<span @text='attr("balance")  -> formatMoney(val)'>
 
 <!-- execute arbitrary JS; refreshes after a `reset` event happens at the model -->
 <span @text='on("reset") -> model.getResetMessage()'>
 
-<!-- html also works -->
+<!-- html() also works -->
 <span @html='attr("description")'>
-<span @html='attr("description") -> markdown(val) '>
+<span @html='attr("description") -> markdown(val)'>
+~~~
 
-<!-- uses class "active" if the model attribute "enabled" is truthy -->
+#### Two-way binding
+Two-way bindings are also supported. You can propogate changes from user input
+back to the model using `@value`.
+
+~~~ html
+<!-- two-way bindings -->
+<input type='text' @value='attr("title")'>
+<textarea @value='attr("description")'></textarea>
+~~~
+
+#### More features
+Use `@class` to toggle class, `@at(...)` to set attributes, `@if` to show/hide
+blocks, `@subview` to render Backbone Views, `@run` to run custom view code.
+
+~~~ html
+<!-- uses class `active` if the model attribute `enabled` is truthy -->
 <div @class(active)='attr("enabled")'>
 
 <!-- attributes -->
 <input @at(type)='attr("input_type")'>
 
-<!-- two-way binding -->
-<input @value='attr("title")'>
-
 <!-- Showing and hiding blocks as needed -->
 <div @if='attr("premium")'>
 <div @if='attr(user, "premium")'>
 <div @if='-> user.isPremium()'>
-~~~
 
-~~~ html
 <!-- Subview: instantiate another view -->
 <div @subview(summary)='-> new SummaryView({ el: el })'>
 
 <!-- Run an arbitrary view method -->
 <!-- (runs it again if attribute changes) -->
 <div @run(toggle)="attr('editable')">
+~~~
 
-<!-- Loops -->
+#### Loops
+Loops are supported using `@each`.
+
+~~~ html
+<!-- Arrays -->
+<ul @each(person)='-> people'>
+  <li>
+    <strong @text='-> person.name'></strong>
+    <small  @text='-> person.title'></small>
+  </li>
+</ul>
+~~~
+
+It even has explicit support for Backbone Collections which reacts to `add`,
+`sort`, `delete` and `reset` events.
+
+~~~ html
+<!-- Looping over collections -->
 <ul @each(person)='-> model.people()'>
   <li @subviews(peopleViews)='-> new PersonView({ el: el, model: person })'>
   </li>
 </ul>
-
 ~~~
 
 Implementation
