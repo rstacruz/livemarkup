@@ -31,8 +31,9 @@
    *       };
    *     }
    *
-   * `LM(element)` is an alias for `new LM.template(element)` -- see [Template]
-   * documentation for more details.
+   * `LM(element)` is an alias for `new LM.template(element)`, and hence it
+   * returns a [Template] object. See [Template] documentation for more
+   * details.
    */
 
   var LM = function(element) {
@@ -56,9 +57,7 @@
 
   /**
    * A template object representing a live DOM instance. The `LM(...)` function
-   * returns a template instance.
-   *
-   * See [LM()] for more info.
+   * returns a template instance. See [LM()] for more info.
    */
 
   function Template($el) {
@@ -78,7 +77,7 @@
   LM.template = Template;
 
   /**
-   * Root element.
+   * The root element.
    */
 
   Template.prototype.$el = null;
@@ -117,7 +116,7 @@
    * Sets the target model of the template to the given object.
    *
    *     var model = new Backbone.Model();
-   *     LM($element).bind(model);
+   *     tpl.bind(model);
    */
 
   Template.prototype.bind = function(model) {
@@ -129,6 +128,8 @@
   /**
    * Listens to an event. Usually used as `.on('destroy')` to attach teardown
    * behavior in actions/modifiers.
+   *
+   *     tpl.on('destroy', function() { ... });
    */
 
   Template.prototype.on = function() {
@@ -155,6 +156,8 @@
    *
    * In the first time a template is rendered, models will be bound, and
    * directives will be removed from the DOM.
+   *
+   *     tpl.render();
    */
 
   Template.prototype.render = function() {
@@ -169,7 +172,6 @@
    * appropriately.
    *
    * Called on first [Template#render()]. No need to call manually.
-   *
    * @api private
    */
 
@@ -206,7 +208,6 @@
    *
    * This undoes everything that the [Action]s and [Modifier]s do.
    *
-   *     tpl = LM($element);
    *     // ...
    *     tpl.destroy();
    *     tpl.$el.remove();

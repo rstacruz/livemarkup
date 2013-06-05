@@ -13,6 +13,8 @@ _Livemarkup is still not feature-complete. Try it out now, but don't expect
 all features to be implemented.  See the [development notes] to see what works
 and what doesn't._
 
+[![Build Status](https://travis-ci.org/rstacruz/livemarkup.png?branch=master)](https://travis-ci.org/rstacruz/livemarkup)
+
 Quick reference
 ---------------
 
