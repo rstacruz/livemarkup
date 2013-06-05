@@ -20,7 +20,8 @@ Quick reference
 
 Livemarkup is not a templating language per se. It takes a DOM tree, parses
 directives out of it, and performs the behavior it describes. In essence, it
-lets you write your client-side templates using plain HTML.
+lets you write your client-side templates using plain HTML. This example uses
+[@text](#text) to change the text of an element.
 
 ~~~ html
 <!-- use arbitrary JS to set text (does not auto-update) -->
@@ -30,8 +31,9 @@ lets you write your client-side templates using plain HTML.
 
 #### Model-to-DOM binding
 Livemarkup is built to be reactive -- it also allows you to bind to Backbone
-model attributes. The DOM updates in real time (because it's *live markup!*) as
-model attributes are changed.
+model attributes using [attr()](#attr). The DOM updates in real time (because
+it's *live markup!*) as model attributes are changed. You may also use
+[on()](#on) to listen to other model events.
 
 ~~~ html
 <!-- sets text to the `first_name` attribute of a model. -->
@@ -42,17 +44,18 @@ model attributes are changed.
 <span @text='attr("lastname") -> val.toUpperCase()'>
 <span @text='attr("balance")  -> formatMoney(val)'>
 
-<!-- execute arbitrary JS; refreshes after a `reset` event happens at the model -->
-<span @text='on("reset") -> model.getResetMessage()'>
-
 <!-- html() also works -->
 <span @html='attr("description")'>
 <span @html='attr("description") -> markdown(val)'>
+
+<!-- execute arbitrary JS; refreshes after a `reset` event happens at the model -->
+<!-- (`this` refers to the model) -->
+<span @text='on("sync") -> "Last updated on " + this.changedAt()'>
 ~~~
 
 #### Two-way binding
 Two-way bindings are also supported. You can propogate changes from user input
-back to the model using `@value`.
+back to the model using [@value](#value).
 
 ~~~ html
 <!-- two-way bindings -->
@@ -61,8 +64,8 @@ back to the model using `@value`.
 ~~~
 
 #### More features
-Use `@class` to toggle class, `@at(...)` to set attributes, `@if` to show/hide
-blocks, `@subview` to render Backbone Views, `@run` to run custom view code.
+Use [@class](#class) to toggle class, [@at(...)](#at) to set attributes, [@if](#if) to show/hide
+blocks, [@subview](#subview) to render Backbone Views, [@run](#run) to run custom view code.
 
 ~~~ html
 <!-- uses class `active` if the model attribute `enabled` is truthy -->
