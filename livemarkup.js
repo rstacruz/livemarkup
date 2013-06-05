@@ -4,7 +4,7 @@
 (function(lm) {
   if (typeof module === 'object') module.exports = lm;
   else this.LM = lm;
-})(function($) {
+})(function($, _) {
 
   /**
    * Returns a template object.
@@ -340,4 +340,4 @@
     return re;
   }
 
-}(jQuery || Zepto || ender));
+}(jQuery || Zepto || ender, _));
