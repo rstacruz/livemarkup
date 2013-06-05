@@ -36,11 +36,6 @@
     this.directives = [];
     this.localContext = {};
 
-    // Event emitter for `.on()` and `.trigger()`.
-    // Let's reuse $el because (1) we don't want a Backbone.Events dependency,
-    // (2) jQuery({}) doesn't work on Zepto
-    this.events = $el;
-
     // If it's a Backbone view
     if ($el.$el) {
       this.view = $el;
@@ -91,13 +86,15 @@
     return this;
   };
 
+  // Let's reuse $el as an event emitter because (1) we don't want a
+  // Backbone.Events dependency, (2) `jQuery({})` doesn't work on Zepto.
   Template.prototype.on = function() {
     // Legacy jQuery support
-    (this.events.on || this.events.bind).apply(this.events, arguments);
+    (this.$el.on || this.$el.bind).apply(this.$el, arguments);
   };
 
   Template.prototype.trigger = function() {
-    this.events.trigger.apply(this.events, arguments);
+    this.$el.trigger.apply(this.$el, arguments);
   };
 
   /**
