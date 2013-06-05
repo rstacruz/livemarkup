@@ -60,13 +60,13 @@ describe('if()', function() {
 
   // ----
 
-  xdescribe("stopping", function() {
+  describe("stopping and subtemplating", function() {
     beforeEach(function() {
       $el = $("<div id='box'>")
         .appendTo("body")
         .html(
           "<div @if='attr(\"admin\")'>" +
-            "<strong class='name' @text='-> \"a\"'></strong>" +
+            "<strong class='name' @text='attr(\"name\")'></strong>" +
             "<span @text='-> outerFn()'></span>" +
           "</div>");
 
@@ -75,13 +75,26 @@ describe('if()', function() {
         .locals({ outerFn: outerFn });
     });
 
-    it("should work", function() {
-      user.set('admin', true);
-      tpl.bind(user).render();
-      console.log($el.html());
+    describe("true", function() {
+      beforeEach(function() {
+        user.set('admin', true);
+        tpl.bind(user).render();
+      });
 
-      assert.isTrue(outerFn.calledOnce);
+      it("should work", function() {
+        var expected = '<div><strong class="name">John</strong><span>One</span></div>';
+        assert.equal($el.html(), expected);
+      });
+
+      it("directives inside should work", function() {
+        assert.equal($(".name").html(), "John");
+      });
+
+      it("helper should be called", function() {
+        assert.isTrue(outerFn.calledOnce);
+      });
     });
+
 
     it("should not call", function() {
       user.set('admin', false);
@@ -90,13 +103,5 @@ describe('if()', function() {
       assert.isTrue(outerFn.notCalled);
     });
 
-    it("directives inside should work", function() {
-      user.set('admin', true);
-      tpl.bind(user).render();
-
-      assert.equal($(".name").html(), "John");
-    });
-
   });
-
 });

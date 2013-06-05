@@ -33,6 +33,8 @@
   function Template($el) {
     this.$el = $el;
     this.initialize = _.memoize(this.initialize);
+    this.directives = [];
+    this.localContext = {};
 
     // If it's a Backbone view
     if ($el.$el) {
@@ -53,7 +55,7 @@
    * Array of [Directive] instances.
    */
 
-  Template.prototype.directives = [];
+  Template.prototype.directives = null;
 
   /**
    * The model bound using [Template#bind()].
@@ -65,7 +67,7 @@
    * The local context as modified using [Template#locals()].
    */
 
-  Template.prototype.localContext = {};
+  Template.prototype.localContext = null;
 
   /**
    * Sets the target model of the template to the given object.
@@ -181,6 +183,7 @@
     this.$el = $(el);
     this.template = template;
     this.model = template.model;
+    this.formatters = [];
     this._stopped = false;
 
     // Apply the action
@@ -209,7 +212,7 @@
   /**
    * List of formatter functions.
    */
-  Directive.prototype.formatters = [];
+  Directive.prototype.formatters = null;
 
   /**
    * Function to be called on rendering. Usually overridden in an action.
@@ -244,8 +247,7 @@
    */
 
   Directive.prototype.render = function() {
-    if (this.onrender)
-      this.onrender.apply(this);
+    if (this.onrender) this.onrender();
   };
 
   // ----------------------------------------------------------------------------
@@ -266,7 +268,9 @@
    */
 
   Actions.text = function() {
-    this.onrender = function() { this.$el.text(this.getValue()); };
+    this.onrender = function() {
+      this.$el.text(this.getValue());
+    };
   };
 
   /**
@@ -280,7 +284,9 @@
 
   Actions.html = function() {
     this.stop();
-    this.onrender = function() { this.$el.html(this.getValue()); };
+    this.onrender = function() {
+      this.$el.html(this.getValue());
+    };
   };
 
   Actions.if = function() {
