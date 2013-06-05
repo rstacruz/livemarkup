@@ -13,6 +13,7 @@
   "main": "index",
   "scripts": {
     "test": "./node_modules/.bin/mocha -R spec",
+    "test-full": "env full=1 ./node_modules/.bin/mocha -R spec",
     "autotest": "./node_modules/.bin/mocha --watch -R progress"
   },
   "devDependencies": {

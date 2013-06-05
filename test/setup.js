@@ -39,8 +39,10 @@ function inspect(obj) {
  */
 
 function multi(name, fn) {
-  var versions = ['jquery-1.9.1', 'jquery-1.10.1', 'jquery-1.5.2', 'zepto-1.0'];
-  if (process.env.fast) versions = ['jquery-1.9.1'];
+  var versions = ['jquery-1.9.1'];
+
+  if (process.env.full)
+    versions = ['jquery-1.9.1', 'jquery-1.10.1', 'jquery-1.5.2', 'zepto-1.0'];
 
   versions.forEach(function(lib) {
     describe(lib, function() {
