@@ -29,20 +29,10 @@
    *    .bind(model)
    *    .locals({ view: view })
    *    .render();
-   *
-   * A template has the following properties as well:
-   *
-   *  - $el          : Element
-   *  - model        : Reference to the main model
-   *  - localContext : Locals
-   *  - directives   : Array of [Directive] instances
    */
 
   function Template($el) {
     this.$el = $el;
-    this.model = null;
-    this.localContext = {};
-    this.directives = [];
     this.initialize = _.memoize(this.initialize);
 
     // If it's a Backbone view
@@ -53,6 +43,30 @@
   }
 
   LM.template = Template;
+
+  /**
+   * Root element.
+   */
+
+  Template.prototype.$el = null;
+
+  /**
+   * Array of [Directive] instances.
+   */
+
+  Template.prototype.directives = [];
+
+  /**
+   * The model bound using [Template#bind()].
+   */
+
+  Template.prototype.model = null;
+
+  /**
+   * The local context as modified using [Template#locals()].
+   */
+
+  Template.prototype.localContext = {};
 
   /**
    * Sets the target model of the template to the given object.
