@@ -13,7 +13,7 @@
   "main": "index",
   "scripts": {
     "test": "./node_modules/.bin/mocha -R spec",
-    "autotest": "./node_modules/.bin/mocha -b --watch -R landing"
+    "autotest": "./node_modules/.bin/mocha --watch -R progress"
   },
   "devDependencies": {
     "mocha": "~1.10.0",

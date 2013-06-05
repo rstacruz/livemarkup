@@ -374,10 +374,11 @@
     var scope = dir.$el;
 
     // For things that have multiple, you need to array'ify your values.
-    var isMulti = scope.is(':radio,:checkbox,select[multiple]');
+    var radioOrCheck = 'input[type="radio"],input[type="checkbox"]';
+    var isMulti = scope.is(radioOrCheck + ',select[multiple]');
 
     // For multiples, make it work with its bretheren as well
-    if (scope.is(':radio,:checkbox')) {
+    if (scope.is(radioOrCheck)) {
       var name = scope.attr('name');
       scope = scope.closest('form,:root').find('[name="'+name+'"]');
     }

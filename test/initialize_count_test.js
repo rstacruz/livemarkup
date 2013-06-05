@@ -1,9 +1,7 @@
 var Setup = require('./setup');
 
-describe('initialize count', function() {
+multi('initialize count', function() {
   var tpl, $parent, model;
-
-  beforeEach(Setup.env);
 
   beforeEach(function() {
     model = {

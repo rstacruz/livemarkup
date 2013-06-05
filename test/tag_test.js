@@ -1,9 +1,7 @@
 var Setup = require('./setup');
 
-describe('tag test', function() {
+multi('tag test', function() {
   var tpl, $parent;
-
-  beforeEach(Setup.env);
 
   beforeEach(function() {
     $parent = $("<p class='paragraph'>")

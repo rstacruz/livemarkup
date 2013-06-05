@@ -1,11 +1,9 @@
 var Setup = require('./setup');
 
-describe('@value() radio', function() {
+multi('@value() radio', function() {
   var tpl, $el, model;
 
-  beforeEach(Setup.env);
   beforeEach(setModel);
-
   beforeEach(function() {
     model.set('number', 'two');
     render(
@@ -15,10 +13,10 @@ describe('@value() radio', function() {
     );
   });
 
-  it("should not change values", function() {
-    assert.equal($('.c1').attr('value'), 'one');
-    assert.equal($('.c2').attr('value'), 'two');
-    assert.equal($('.c3').attr('value'), 'three');
+  xit("should not change values", function() {
+    assert.equal('one', $('.c1').attr('value'));
+    assert.equal('two', $('.c2').attr('value'));
+    assert.equal('three', $('.c3').attr('value'));
   });
 
   xit('(Not working) should set the right value', function() {

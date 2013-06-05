@@ -1,8 +1,6 @@
 var Setup = require('./setup');
 
-describe('locals', function() {
-  beforeEach(Setup.env);
-
+multi('locals', function() {
   var tpl, model, $parent;
 
   beforeEach(function() {

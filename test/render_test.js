@@ -1,9 +1,7 @@
 var Setup = require('./setup');
 
-describe('render', function() {
+multi('render', function() {
   var tpl, $parent, helper;
-
-  beforeEach(Setup.env);
 
   beforeEach(function() {
     helper = sinon.spy();

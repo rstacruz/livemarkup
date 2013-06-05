@@ -1,9 +1,7 @@
 var Setup = require('./setup');
 
-describe('if()', function() {
+multi('if()', function() {
   var tpl, $el, user, outerFn, innerFn;
-
-  beforeEach(Setup.env);
 
   beforeEach(function() {
     outerFn = sinon.stub().returns("One");
