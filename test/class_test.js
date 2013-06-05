@@ -19,6 +19,13 @@ describe('@class()', function() {
     assert.equal($parent.html(), '<div class="active enabled"></div>');
   });
 
+  it('multiple classes', function() {
+    model.set('enabled', true);
+    render("<div class='active' @class(enabled.is-enabled)='attr(\"enabled\")'></div>");
+
+    assert.equal($parent.html(), '<div class="active enabled is-enabled"></div>');
+  });
+
   // ---
 
   beforeEach(function() {

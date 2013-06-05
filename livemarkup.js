@@ -320,6 +320,8 @@
    */
 
   Actions.class = function(className) {
+    className = className.replace(/\./g, ' ');
+
     this.onrender = function() {
       var val = this.getValue();
 
@@ -345,6 +347,12 @@
       this.$el.html(this.getValue());
     };
   };
+
+  /**
+   * Makes a two-way value binding. Works for `input`, `textarea`, and `select`.
+   *
+   *     <input @value='attr("name")'>
+   */
 
   Actions.value = function() {
     var dir = this;

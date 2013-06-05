@@ -22,6 +22,8 @@ To do:
  * actions.each() array
  * actions.each() collection
  * attr('a1 a2')
+ * actions.options()
+ * actions.optgroups()
 
 Beyond (need design decisions):
 

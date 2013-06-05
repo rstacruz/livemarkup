@@ -22,6 +22,7 @@ supports model binding and some fancy doodads.
 
 <!-- html also works -->
 <span @html='attr("description")'>
+<span @html='attr("description") -> markdown(val) '>
 
 <!-- uses class "active" if the model attribute "enabled" is truthy -->
 <div @class(active)='attr("enabled")'>
@@ -32,10 +33,15 @@ supports model binding and some fancy doodads.
 <!-- two-way binding -->
 <input @value='attr("title")'>
 
-<div @showIf='attr("premium")'>
-<div @showIf='attr(user, "premium")'>
-<div @showIf='-> user.isPremium()'>
+<!-- Showing and hiding blocks as needed -->
+<div @if='attr("premium")'>
+<div @if='attr(user, "premium")'>
+<div @if='-> user.isPremium()'>
+~~~
 
+Advanced:
+
+~~~ html
 <!-- Subview: instantiate another view -->
 <div @subview(summary)='-> new SummaryView({ el: el })'>
 
