@@ -128,6 +128,7 @@
         var d = parseDirective(name, value);
         if (!d) return;
 
+        parent.removeAttribute(name);
         d = new Directive(template, parent, d.action, d.param, d.value);
         directives.push(d);
       });
