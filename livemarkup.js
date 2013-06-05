@@ -127,6 +127,8 @@
     var directives = [];
 
     function walk(parent) {
+      var stop = false;
+
       eachAttribute(parent, function(name, value) {
         var d = parseDirective(name, value);
         if (!d) return;
@@ -134,11 +136,15 @@
         parent.removeAttribute(name);
         d = new Directive(template, parent, d.action, d.param, d.value);
         directives.push(d);
+
+        if (d._stop) stop = true;
       });
 
-      _.each(parent.children, function(child) {
-        if (child.nodeType === 1) walk(child);
-      });
+      if (!stop) {
+        _.each(parent.children, function(child) {
+          if (child.nodeType === 1) walk(child);
+        });
+      }
     }
 
     walk(root.nodeName ? root : root[0]);
@@ -164,20 +170,31 @@
     this.template = template;
     this.model = template.model;
     this.getters = [];
+    this._stop = false;
 
     // Apply the action
     LM.actions[action].apply(this, [param]);
 
     // Build the runner
     var code = 'ctx.' + value + ';';
-    code = 'with(helpers) { ' + code + ' }';
-    code = 'with(locals) { ' + code + ' }';
-    var fn = new Function('ctx', 'helpers', 'locals', code);
+    code = 'with(locals){with(helpers){' + code + '}}';
+    var fn = new Function('ctx', '$el', 'helpers', 'locals', code);
 
     // Run it
     var ctx = new Context(this);
-    fn(ctx, LM.helpers, template.localContext);
+    fn(ctx, this.$el, LM.helpers, template.localContext);
   }
+
+  /**
+   * Element
+
+  /**
+   * Stops processing down.
+   */
+
+  Directive.prototype.stop = function() {
+    this._stop = true;
+  };
 
   /**
    * Returns the value of a given directive.
@@ -231,6 +248,7 @@
    */
 
   LM.actions.html = function() {
+    this.stop();
     this.onrender = function() { this.$el.html(this.getValue()); };
   };
 

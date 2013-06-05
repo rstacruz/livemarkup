@@ -11,11 +11,17 @@ Done:
 
 To do:
 
+ * actions.if()
+ * Directive#stop()
  * actions.each() array
  * actions.each() collection
+
  * actions.value()
  * actions.value() two way binding
  * actions.at()
+
+Easy na lang:
+
  * actions.class()
  * actions.showIf()
  * Test for mods.format()
@@ -24,6 +30,5 @@ To do:
 Beyond (need design decisions):
 
  * actions.run()
- * actions.include()
  * actions.subview()
 
