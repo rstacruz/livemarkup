@@ -63,7 +63,9 @@ Implementation
 #### With Backbone.js
 
 In your Backbone views, simply add your template HTML to your view element
-somehow [1]. Then initialize a Livemarkup object via `LM(this)` [2].
+somehow [1]. Then initialize a Livemarkup object via `LM(this)` [2]. In this
+mode, it uses the Backbone's [listenTo()] facility so the events bound will be
+unbound once the view is removed.
 
 ~~~ js
 Backbone.View.extend({
@@ -71,10 +73,8 @@ Backbone.View.extend({
     this.html('...');            /* 1 */
     this.template = LM(this)     /* 2 */
       .bind(this.model)
-      .local({ x: true })
       .render();
   }
-
 });
 ~~~
 
@@ -180,3 +180,5 @@ API
 Creates a template object.
 
 ### Template#bind()
+
+[listenTo()]: http://backbonejs.org/#Events-listenTo

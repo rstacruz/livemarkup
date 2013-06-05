@@ -500,7 +500,7 @@
 
     // If a view is available, use Backbone's `listenTo()` facility so that
     // removing a view will stop any events.
-    if (view) {
+    if (view && view.listenTo) {
       view.listenTo(model, name, fn);
       dir.template.on('destroy', function() { view.stopListening(model, name, fn); });
     }
