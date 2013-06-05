@@ -12,6 +12,25 @@
    *     var $div = $("...");
    *     LM($div);
    *
+   * Full example:
+   *
+   *     var $div = $("#my_template");
+   *     var template = LM($div)
+   *      .bind(model)
+   *      .locals({ count: 200 })
+   *      .render();
+   *
+   * You may also pass a Backbone view to `LM()`.
+   *
+   *     Backbone.View.extend({
+   *       render: function() {
+   *         this.html(require('templates/book/show'));
+   *         this.template = LM(this)
+   *           .bind(this.model)
+   *           .render();
+   *       };
+   *     }
+   *
    * `LM(element)` is an alias for `new LM.template(element)` -- see [Template]
    * documentation for more details.
    */
@@ -21,13 +40,25 @@
   };
 
   /**
-   * A template object representing a live DOM instance.
+   * You may set helpers that will be available on every Livemarkup template by
+   * extending the `LM.helpers` object.
    *
-   *     var $div = $("#my_template");
-   *     var tpl = new LM.template($div)
-   *      .bind(model)
-   *      .locals({ view: view })
-   *      .render();
+   *     LM.helpers.shortDate = function(date) {
+   *       return moment(date).format('MMMM Do YYYY');
+   *     };
+   *
+   * You can then use them in your views like so:
+   *
+   *     <div @text='attr("updated_at") -> shortDate(val)'>
+   */
+
+  LM.helpers = {};
+
+  /**
+   * A template object representing a live DOM instance. The `LM(...)` function
+   * returns a template instance.
+   *
+   * See [LM()] for more info.
    */
 
   function Template($el) {
@@ -582,12 +613,6 @@
   // ----------------------------------------------------------------------------
   // Helpers
 
-  /**
-   * Helpers
-   */
-
-  LM.helpers = {};
-
   return LM;
 
   /**
@@ -644,6 +669,5 @@
 
     return action;
   }
-
 
 }(this.jQuery || this.Zepto || this.ender, _));
