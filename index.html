@@ -23,7 +23,8 @@
   <meta content="Livemarkup" property="og:title">
   <meta content="Livemarkup description goes here." name="description">
 
-  <!-- Initializer -->
+  <!-- Customizations -->
+  <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
   <script>
     var islocal = location.hostname.match(/localhost/);
     Flatdoc.run({
@@ -43,7 +44,9 @@
     }
     * { -webkit-font-smoothing: antialiased !important; }
     body, td, textarea, input { font-size: 14px; }
-    .content pre > code { letter-spacing: 0; }
+    .content pre > code { letter-spacing: 0; font-size: 0.85em; line-height: 1.5; font-family: 'Droid Sans Mono', menlo, lucida console, monospace; }
+    .content pre > code .keyword { letter-spacing: -1px; }
+    .content pre > code .comment { font-family: sans-serif; font-size: 1.1em; color: #999; }
   </style>
 </head>
 <body class='large-brief xno-literate' role='flatdoc'>
