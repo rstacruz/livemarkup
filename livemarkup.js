@@ -299,6 +299,14 @@
     };
   };
 
+  Actions.at = function(name) {
+    this.onrender = function() {
+      var val = this.getValue();
+      if (val === false) this.$el.removeAttr(name);
+      else this.$el.attr(name, val);
+    };
+  };
+
   /**
    * HTML setting action.
    *
@@ -466,12 +474,12 @@
    * @api private
    */
   function parseDirective(name, value) {
-    var m = name.match(/^@([a-zA-Z0-9\_]+)$/);
+    var m = name.match(/^@([a-zA-Z0-9\_]+)(?:\(([^\)]+)\))$/);
     if (!m) return;
 
     var re = {};
     re.action = m[1];
-    re.param = '';
+    re.param = m[2];
     re.value = value
       .replace(/-> (.*)$/, function(_, fn) {
         return '.format(function(val) { return ('+fn+'); })';
