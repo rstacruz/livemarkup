@@ -150,7 +150,7 @@
         d = new Directive(template, parent, d.action, d.param, d.value);
         directives.push(d);
 
-        if (d._stop) stop = true;
+        if (d._stopped) stop = true;
       });
 
       if (!stop) {
@@ -179,11 +179,9 @@
 
   function Directive(template, el, action, param, value) {
     this.$el = $(el);
-    this.onrender = null;
     this.template = template;
     this.model = template.model;
-    this.getters = [];
-    this._stop = false;
+    this._stopped = false;
 
     // Apply the action
     LM.actions[action].apply(this, [param]);
@@ -199,14 +197,31 @@
   }
 
   /**
-   * Element
+   * Reference to parent [Template].
+   */
+  Directive.prototype.template = null;
+
+  /**
+   * Reference to model in the template. Equivalent to `template.model`.
+   */
+  Directive.prototype.model = null;
+
+  /**
+   * List of formatter functions.
+   */
+  Directive.prototype.formatters = [];
+
+  /**
+   * Function to be called on rendering. Usually overridden in an action.
+   */
+  Directive.prototype.onrender = null;
 
   /**
    * Stops processing down.
    */
 
   Directive.prototype.stop = function() {
-    this._stop = true;
+    this._stopped = true;
   };
 
   /**
@@ -219,7 +234,7 @@
   Directive.prototype.getValue = function() {
     var dir = this;
 
-    return _.inject(this.getters, function(val, fn) {
+    return _.inject(this.formatters, function(val, fn) {
       return fn.apply(dir, [val]);
     }, null);
   };
@@ -237,6 +252,8 @@
 
   /**
    * Actions.
+   *
+   * All actions apply to a Directive object.
    */
 
   var Actions = {};
@@ -264,6 +281,22 @@
   Actions.html = function() {
     this.stop();
     this.onrender = function() { this.$el.html(this.getValue()); };
+  };
+
+  Actions.if = function() {
+    // Create a placeholder empty text code so we know where to ressurrent the
+    // element later on.
+    var $holder = $(createTextNodeAfter(this.$el));
+
+    // Remove the element so we can append it later on.
+    var $el = this.$el.remove();
+
+    this.onrender = function() {
+      if (this.getValue()) {
+        $holder.after($el);
+      }
+      else $el.remove();
+    };
   };
 
   // ----------------------------------------------------------------------------
@@ -346,7 +379,7 @@
     var model = dir.model;
     if (model) fn = $.proxy(fn, model);
 
-    dir.getters.push(fn);
+    dir.formatters.push(fn);
     return this;
   };
 
@@ -396,6 +429,12 @@
      .replace(/^(\.+)/, '');
 
     return re;
+  }
+
+  function createTextNodeAfter($el) {
+    var text = document.createTextNode('');
+    $el.after(text);
+    return text;
   }
 
 }(jQuery || Zepto || ender, _));
