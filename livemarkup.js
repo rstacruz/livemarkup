@@ -206,8 +206,7 @@
     this.formatters = [];
     this._stopped = false;
 
-    // Apply the action
-    LM.actions[action].apply(this, [param]);
+    getAction(action).apply(this, [param]);
 
     // Build the runner
     var code = 'ctx.' + value + ';';
@@ -299,11 +298,32 @@
     };
   };
 
+  /**
+   * Attribute changing action.
+   *
+   *     <div @at(type)='attr("type")'>
+   */
+
   Actions.at = function(name) {
     this.onrender = function() {
       var val = this.getValue();
       if (val === false) this.$el.removeAttr(name);
+
       else this.$el.attr(name, val);
+    };
+  };
+
+  /**
+   * Class toggling action.
+   *
+   *     <div @class(enabled)='attr("enabled")'>
+   */
+
+  Actions.class = function(className) {
+    this.onrender = function() {
+      var val = this.getValue();
+
+      this.$el.toggleClass(className, !!val);
     };
   };
 
@@ -494,5 +514,18 @@
     $el.after(text);
     return text;
   }
+
+  /**
+   * Finds an action of a given name and returns it.
+   * @api private
+   */
+
+  function getAction(name) {
+    var action = LM.actions[name.toLowerCase()];
+    if (!action) { throw new Error("Livemarkup: No action named '"+name+"'"); }
+
+    return action;
+  }
+
 
 }(jQuery || Zepto || ender, _));

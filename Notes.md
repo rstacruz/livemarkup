@@ -12,6 +12,8 @@ Done:
  * actions.html not continuing
  * Template#destroy()
  * actions.if()
+ * actions.at()
+ * actions.class()
 
 To do:
 
@@ -20,11 +22,9 @@ To do:
 
  * actions.value()
  * actions.value() two way binding
- * actions.at()
 
 Easy na lang:
 
- * actions.class()
  * actions.showIf()
  * Test for mods.format()
  * Test for LM.helpers
