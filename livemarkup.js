@@ -35,6 +35,7 @@
     this.initialize = _.memoize(this.initialize);
     this.directives = [];
     this.localContext = {};
+    this.events = $({});
 
     // If it's a Backbone view
     if ($el.$el) {
@@ -77,6 +78,14 @@
     this.model = model;
 
     return this;
+  };
+
+  Template.prototype.on = function() {
+    this.events.on.apply(this.events, arguments);
+  };
+
+  Template.prototype.trigger = function() {
+    this.events.trigger.apply(this.events, arguments);
   };
 
   /**
@@ -127,6 +136,18 @@
     else if (arguments.length === 2) {
       this.localContext[arguments[0]] = arguments[1];
     }
+
+    return this;
+  };
+
+  /**
+   * Cleans up and unbinds all events, rendering the template inert.
+   *
+   * This undoes everything that an [Action] does.
+   */
+
+  Template.prototype.destroy = function() {
+    this.trigger('destroy');
 
     return this;
   };
@@ -220,6 +241,12 @@
   Directive.prototype.onrender = null;
 
   /**
+   * Function to be called when destroying ([Template#destroy()]). Usually
+   * overridden in an action.
+   */
+  Directive.prototype.ondestroy = null;
+
+  /**
    * Stops processing down.
    */
 
@@ -292,6 +319,7 @@
   Actions.if = function() {
     this.stop();
 
+    var dir = this;
     var template = this.template;
 
     // Create a placeholder empty text code so we know where to ressurrent the
@@ -301,19 +329,22 @@
     // Remove the element so we can append it later on.
     var $el = this.$el.remove();
 
+    // Render as a subtemplate.
+    this.sub = LM($el).locals(template.localContext).bind(template.model);
+
     this.onrender = function() {
       if (this.getValue()) {
         $holder.after($el);
-
-        // FIXME need to bind and unbind
-        this.sub = LM($el).locals(template.localContext).bind(template.model);
         this.sub.render();
       }
       else {
-        // if (this.sub) this.sub.destroy();
+        this.sub.destroy();
         $el.remove();
       }
     };
+
+    // Propagate destruction.
+    template.on('destroy', function() { dir.sub.destroy(); });
   };
 
   // ----------------------------------------------------------------------------
@@ -385,7 +416,10 @@
     if (!model) { model = dir.model; }
     if (!model) { throw new Error("on(): no model to bind to"); }
 
-    model.on(name, function() { dir.render(); }, dir.template);
+    var fn = function() { dir.render(); };
+    model.on(name, fn);
+    dir.template.on('destroy', function() { model.off(name, fn); });
+
     return this;
   };
 
