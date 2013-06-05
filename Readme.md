@@ -114,8 +114,9 @@ How to implement
 
 ### Dependencies
 
-Livemarkup only has 2 hard dependencies: [jQuery]/[Zepto] and [Underscore.js].
-It's recommended for use with [Backbone.js], but can be used without it as well.
+Livemarkup only has 2 hard dependencies: [jQuery] 1.5+ or [Zepto] 1.0+ and
+[Underscore.js].  It's recommended for use with [Backbone.js] 0.9.9+, but can be
+used without it as well.
 
 ~~~ html
 <script src='jquery.js'></script>
