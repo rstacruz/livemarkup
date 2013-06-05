@@ -11,17 +11,19 @@ Done:
 
 To do:
 
- * Test for mods.format()
+ * actions.each() array
+ * actions.each() collection
  * actions.value()
  * actions.value() two way binding
  * actions.at()
  * actions.class()
  * actions.showIf()
- * actions.each() array
- * actions.each() collection
+ * Test for mods.format()
+ * Test for LM.helpers
 
-Beyond:
+Beyond (need design decisions):
 
+ * actions.run()
  * actions.include()
  * actions.subview()
 
