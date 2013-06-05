@@ -51,17 +51,21 @@ function multi(name, fn) {
   });
 }
 
+var sourceCache = cache();
 function customEnv(src) {
-  var sources = [
-    getFile('test/vendor/'+src.jquery+'.js'),
-    getFile('test/vendor/underscore-1.4.4.js'),
-    getFile('test/vendor/backbone-1.0.0.js')
-  ];
+  var sources = sourceCache(src, function() {
+    return [
+      getFile('test/vendor/'+src.jquery+'.js'),
+      getFile('test/vendor/underscore-1.4.4.js'),
+      getFile('test/vendor/backbone-1.0.0.js'),
+      getFile('livemarkup.js')
+    ];
+  });
 
   return function(done) {
     jsdom.env({
       html: '<!doctype html><html><head></head><body></body></html>',
-      src: sources.concat([getFile('livemarkup.js')]),
+      src: sources,
       done: function(errors, window) {
         window.console = console;
         extend(global, {
@@ -74,5 +78,14 @@ function customEnv(src) {
         done(errors);
       }
     });
+  };
+}
+
+function cache() {
+  var hash = {};
+  return function (key, fn) {
+    key = JSON.stringify(key);
+    if (!hash[key]) hash[key] = fn();
+    return hash[key];
   };
 }
