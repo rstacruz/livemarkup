@@ -1,36 +1,24 @@
-global.getFile = getFile;
+// Dependencies (global)
 global.assert = require('chai').assert;
 global.expect = require('chai').expect;
 global.extend = require('util')._extend;
 global.sinon = require('sinon');
+
+// Dependencies (local)
+var jsdom = require('jsdom');
+var sourceCache = cache();
+
+// Helpers
 global.inspect = inspect;
+global.getFile = getFile;
 global.multi = multi;
 
-module.exports = { env: env };
+// Setup exports
+module.exports = { env: customEnv({ jquery: 'jquery-1.9.1' }) };
 
-var jsdom = require('jsdom');
-function env(done) {
-  jsdom.env({
-    html: '<!doctype html><html><head></head><body></body></html>',
-    src: [
-      getFile('test/vendor/jquery-1.9.1.js'),
-      getFile('test/vendor/underscore-1.4.4.js'),
-      getFile('test/vendor/backbone-1.0.0.js'),
-      getFile('livemarkup.js')
-    ],
-    done: function(errors, window) {
-      window.console = console;
-      extend(global, {
-        window   : window,
-        Backbone : window.Backbone,
-        LM       : window.LM,
-        $        : window.$,
-        _        : window._
-      });
-      done(errors);
-    }
-  });
-}
+/**
+ * Returns a file's contents -- getFile('test/vendor/x.js')
+ */
 
 function getFile(filepath) {
   var path = require('path');
@@ -38,9 +26,17 @@ function getFile(filepath) {
   return fs.readFileSync(path.resolve(__dirname, '..', filepath)).toString();
 }
 
+/**
+ * Inspects a given object's value
+ */
+
 function inspect(obj) {
   console.log('\n==> ', require('util').inspect(obj, { colors: true }));
 }
+
+/**
+ * Runs a test context in multpile libs
+ */
 
 function multi(name, fn) {
   ['jquery-1.9.1', 'zepto-1.0'].forEach(function(lib) {
@@ -51,7 +47,10 @@ function multi(name, fn) {
   });
 }
 
-var sourceCache = cache();
+/**
+ * Returns a function that generates a custom jsdom env
+ */
+
 function customEnv(src) {
   var sources = sourceCache(src, function() {
     return [
@@ -80,6 +79,10 @@ function customEnv(src) {
     });
   };
 }
+
+/**
+ * Creates a cache
+ */
 
 function cache() {
   var hash = {};
