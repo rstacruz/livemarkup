@@ -29,8 +29,8 @@ To do:
 
  * @value for checkboxes
  * @value for radios
- * attr('a1 a2')
- * actions.options()
+ * attr('a1 a2') -- listen to multiple attributes
+ * actions.options() -- for <select> options
  * actions.optgroups()
 
 Beyond (need design decisions):
@@ -44,9 +44,3 @@ Tests to do:
 
  * Test for mods.format()
  * Test for LM.helpers
-
-----
-
-Not sure on how it works:
-
- * obj to model binding

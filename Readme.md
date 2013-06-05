@@ -204,6 +204,7 @@ A modifier will either describe how a *value* for that directive can be derived,
 or applies a behavior to the directive. Modifiers can be chained.
 
 ~~~ html
+<!-- Examples of .attr() and .format(): -->
 <div @text='attr("name")'>
 <div @text='attr("name").format(function(val) { return val.toUpperCase(); })'>
 <div @text='attr("name").format(helperFunction)'>
@@ -221,6 +222,7 @@ or applies a behavior to the directive. Modifiers can be chained.
 The `->` in the modifiers section is shorthand for `.format()`. These two directives are equivalent.
 
 ~~~ html
+<!-- These two are equivalent: -->
 <div @text='attr("name") -> val.toUpperCase()'>
 <div @text='attr("name").format(val) { return val.toUpperCase(); }'>
 ~~~
