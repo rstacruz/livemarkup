@@ -92,7 +92,8 @@
   };
 
   Template.prototype.on = function() {
-    this.events.on.apply(this.events, arguments);
+    // Legacy jQuery support
+    (this.events.on || this.events.bind).apply(this.events, arguments);
   };
 
   Template.prototype.trigger = function() {
