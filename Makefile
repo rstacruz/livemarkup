@@ -1,4 +1,4 @@
-uglify := ./node_modules/.bin/uglifyjs
+uglify := ./node_modules/.bin/uglifyjs -m --comments "/^!/"
 
 all: \
 	livemarkup.min.js

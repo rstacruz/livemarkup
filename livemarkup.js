@@ -1,3 +1,6 @@
+/*! Livemarkup.js -- ricostacruz.com/livemarkup
+    (c) 2013, MIT licensed */
+
 (function(lm) {
   if (typeof module === 'object') module.exports = lm;
   else this.LM = lm;
