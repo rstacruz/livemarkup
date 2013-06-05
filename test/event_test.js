@@ -1,16 +1,13 @@
 var Setup = require('./setup');
 
-describe('events', function() {
+multi('events', function() {
   var tpl, model, $parent;
 
-  beforeEach(Setup.env);
   beforeEach(setParent);
 
   beforeEach(function() {
     model = new Backbone.Model();
-    tpl = LM($parent)
-      .bind(model)
-      .render();
+    tpl = LM($parent).bind(model).render();
   });
 
   // ----

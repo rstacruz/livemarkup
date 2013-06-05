@@ -1,9 +1,7 @@
 var Setup = require('./setup');
 
-describe('@class()', function() {
+multi('@class()', function() {
   var tpl, $parent, model;
-
-  beforeEach(Setup.env);
 
   it('should work', function() {
     model.set('enabled', true);

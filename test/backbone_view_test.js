@@ -1,9 +1,7 @@
 var Setup = require('./setup');
 
-describe('backbone view test', function() {
+multi('backbone view test', function() {
   var tpl, $parent, model, view;
-
-  beforeEach(Setup.env);
 
   it('should work', function() {
     model.set('name', 'John');

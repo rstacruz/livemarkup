@@ -1,8 +1,6 @@
 var Setup = require('./setup');
 
-describe("Livemarkup", function() {
-  beforeEach(Setup.env);
-
+multi("Livemarkup", function() {
   it("is defined", function() {
     assert.isDefined(LM);
   });

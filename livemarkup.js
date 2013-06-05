@@ -35,7 +35,11 @@
     this.initialize = _.memoize(this.initialize);
     this.directives = [];
     this.localContext = {};
-    this.events = $({}); // Event emitter for `.on()` and `.trigger()`
+
+    // Event emitter for `.on()` and `.trigger()`.
+    // Let's reuse $el because (1) we don't want a Backbone.Events dependency,
+    // (2) jQuery({}) doesn't work on Zepto
+    this.events = $el;
 
     // If it's a Backbone view
     if ($el.$el) {
@@ -610,4 +614,4 @@
   }
 
 
-}(jQuery || Zepto || ender, _));
+}(this.jQuery || this.Zepto || this.ender, _));

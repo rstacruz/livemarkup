@@ -1,9 +1,8 @@
 var Setup = require('./setup');
 
-describe('destroy', function() {
+multi('destroy', function() {
   var tpl, $parent, user;
 
-  beforeEach(Setup.env);
   beforeEach(function() {
     user = new Backbone.Model({ name: "Kesha" });
 

@@ -1,9 +1,8 @@
 var Setup = require('./setup');
 
-describe('attr()', function() {
+multi('attr()', function() {
   var tpl, $el, model;
 
-  beforeEach(Setup.env);
   beforeEach(setModel);
 
   describe('attr("name")', function() {

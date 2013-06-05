@@ -1,9 +1,7 @@
 var Setup = require('./setup');
 
-describe('directives', function() {
+multi('directives', function() {
   var $parent, user;
-
-  beforeEach(Setup.env);
 
   describe("basic case", function() {
     beforeEach(function() {
