@@ -160,7 +160,7 @@
 
   Template.prototype.initialize = function() {
     // Ensure that `destroy` events don't recurse back up to parent templates.
-    this.on('destroy', function(e) { e.stopImmediatePropagation(); });
+    this.on('destroy', function(e) { e.stopPropagation(); });
 
     this.directives = Template.fetchDirectives(this.$el, this);
 
