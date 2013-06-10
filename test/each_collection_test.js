@@ -100,9 +100,19 @@ testSuite('@each() collections', function() {
   // ----
 
   describe('events', function() {
+    beforeEach(function() {
+      users = new Users();
+
+      tpl = template(
+        "<ul @each:user='-> users'>" +
+          "<li><b @text='attr(user, \"name\")'></b></li>" +
+        "</ul>"
+      ).locals({ users: users }).render();
+    });
+
     it('append event', function(done) {
-    tpl.on('append', function() { done(); });
-    users.add({ name: 'Jacob' });
+      tpl.on('append', function() { done(); });
+      users.add({ name: 'Jacob' });
     });
 
     it('UL reset event', function(done) {
