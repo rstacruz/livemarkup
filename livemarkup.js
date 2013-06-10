@@ -76,7 +76,7 @@
    */
 
   function Template($el) {
-    this.$el = $el;
+    this.$el = $($el);
     this.initialize = _.memoize(this.initialize);
     this.directives = [];
     this.localContext = {};
@@ -86,6 +86,10 @@
       this.view = $el;
       this.locals('view', $el);
       this.$el = $el.$el;
+    }
+
+    if ($el.length > 1) {
+      throw new Error("Template can't have more than one root element");
     }
   }
 
