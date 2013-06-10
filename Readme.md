@@ -318,6 +318,57 @@ To be written.
 
 # Misc
 
+Integration
+===========
+
+How to integrate
+----------------
+
+Livemarkup is designed with standard HTML markup in mind, and other template 
+languages should be able to render to Livemarkup.
+
+### With Jade (JS)
+
+You can use it with Jade, here's a CoffeeScript/Backbone example:
+
+~~~ js
+class MyView extends Backbone.View
+  initialize: (options={}) ->
+    @people = options.people
+    super
+
+  render: ->
+    @$el.html @markup()
+    @template = LM(this)
+      .locals(people: @people)
+      .render()
+
+  markup: jade.compile """
+    h3 Users
+    ul(@each:person="-> people")
+      li
+        | Name:
+        strong(@text="-> person.name")
+
+        | Email:
+        span(@text="-> person.email")
+  """
+~~~
+
+### With HAML (Ruby)
+
+You'll have to render it server-side somehow. Maybe something like inline 
+templates?
+
+~~~ html
+%script{type: 'text/template', id: 'person_show'}
+  %ul{ '@each:person' => '-> people' }
+    %li
+      Name:
+      %strong{ '@text' => '-> person.name' }
+      ...
+~~~
+
 Acknowledgements
 ----------------
 
