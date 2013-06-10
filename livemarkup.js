@@ -451,13 +451,15 @@
     var $holder = $(createTextNodeAfter(this.$el));
 
     // Remove the element so we can append it later on.
-    var $el = dir.$el.remove();
+    var $blueprint = dir.$el.remove();
+    var $el;
 
     // Render as a subtemplate.
     this.sub = null;
 
     this.onrender = function() {
       if (this.getValue()) {
+        $el = $blueprint.clone();
         $holder.after($el);
         if (!this.sub) {
           this.sub = LM($el).locals(template.localContext).bind(template.model).render();
@@ -468,7 +470,10 @@
           this.sub.destroy();
           delete this.sub;
         }
-        $el.remove();
+        if ($el) {
+          $el.remove();
+          $el = null;
+        }
       }
     };
 
