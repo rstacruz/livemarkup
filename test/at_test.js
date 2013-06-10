@@ -24,6 +24,6 @@ testSuite('@at()', function() {
   it('true', function() {
     template("<input type='text' @at(autofocus)='-> true' />").render();
 
-    assert.equal($('body').html(), '<input type="text" autofocus="autofocus" />');
+    assert.match($('body').html(), /<input type="text" autofocus=".*" \/>/);
   });
 });
