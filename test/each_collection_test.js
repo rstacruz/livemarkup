@@ -54,8 +54,14 @@ testSuite('@each() collections', function() {
     assert.equal($('body').html(), expected);
 
     users.remove(user);
-    console.log(users);
-    console.log($('body').html());
+  });
+  
+  it('collection.sort', function() {
+    users.reset([{ name: 'c' }, { name: 'b' }, { name: 'a' }]);
+    users.comparator = function(model) { return model.get('name'); };
+    users.sort();
+
+    assert.equal($('body').text(), 'abc');
   });
 
 });

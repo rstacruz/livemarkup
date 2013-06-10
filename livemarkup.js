@@ -505,16 +505,7 @@
     listenVia(view, parent, list, 'add', append);
     listenVia(view, parent, list, 'reset', reset);
     listenVia(view, parent, list, 'remove', remove);
-
-    function reset(models) {
-      _.each(subs, function(tpl) { tpl.destroy(); tpl.$el.remove(); });
-      models.each(append);
-    }
-
-    function remove(model) {
-      var tpl = subs[model.cid];
-      if (tpl) { tpl.destroy(); tpl.$el.remove(); }
-    }
+    listenVia(view, parent, list, 'sort', sort);
 
     function append(model) {
       // Create a subtemplate.
@@ -529,6 +520,24 @@
       $list.append(tpl.$el);
       tpl.$el.trigger('append');
       subs[model.cid] = tpl;
+    }
+
+    function remove(model) {
+      var tpl = subs[model.cid];
+      if (tpl) { tpl.destroy(); tpl.$el.trigger('remove').remove(); }
+    }
+
+    function reset(models) {
+      _.each(subs, function(tpl) { tpl.destroy(); tpl.$el.remove(); });
+      models.each(append);
+    }
+
+    // Sort by re-appending them one-by-one.
+    function sort(models) {
+      models.each(function(model) {
+        var tpl = subs[model.cid];
+        if (tpl) $list.append(tpl.$el);
+      });
     }
   }
 
