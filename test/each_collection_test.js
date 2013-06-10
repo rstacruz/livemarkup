@@ -30,41 +30,6 @@ testSuite('@each() collections', function() {
       assert.equal($('body').html(), expected);
     });
 
-    describe('events', function() {
-      it('append event', function(done) {
-      tpl.on('append', function() { done(); });
-      users.add({ name: 'Jacob' });
-      });
-
-      it('UL reset event', function(done) {
-        tpl.on('reset', function() { done(); });
-        users.reset([{ name: 'John' }, { name: 'Jacob' }]);
-      });
-      
-      it('LI append:reset event', function(done) {
-        tpl.on('append:reset', _.once(function() { done(); }));
-        users.reset([{ name: 'John' }, { name: 'Jacob' }]);
-      });
-
-      it('LI remove event suppression', function(done) {
-        if (!$.fn.on) return done(); /* jQ 1.6+ only */
-
-        users.reset([{ name: 'John' }]);
-
-        tpl.$el.on('remove', 'li', function(e) {
-          e.preventDefault();
-          setTimeout(checkLi, 50);
-        });
-
-        users.remove(users.at(0));
-
-        function checkLi() {
-          assert.equal($('body').html(), '<ul><li><b>John</b></li></ul>');
-          done();
-        }
-      });
-    });
-
     it('collection.reset (fresh)', function() {
       users.reset([{ name: 'John' }, { name: 'Jacob' }]);
 
@@ -118,6 +83,43 @@ testSuite('@each() collections', function() {
 
       var expected = '<ul><li><b>John</b></li><li><b>Jacob</b></li></ul>';
       assert.equal($('body').html(), expected);
+    });
+  });
+
+  // ----
+
+  describe('events', function() {
+    it('append event', function(done) {
+    tpl.on('append', function() { done(); });
+    users.add({ name: 'Jacob' });
+    });
+
+    it('UL reset event', function(done) {
+      tpl.on('reset', function() { done(); });
+      users.reset([{ name: 'John' }, { name: 'Jacob' }]);
+    });
+    
+    it('LI append:reset event', function(done) {
+      tpl.on('append:reset', _.once(function() { done(); }));
+      users.reset([{ name: 'John' }, { name: 'Jacob' }]);
+    });
+
+    it('LI remove event suppression', function(done) {
+      if (!$.fn.on) return done(); /* jQ 1.6+ only */
+
+      users.reset([{ name: 'John' }]);
+
+      tpl.$el.on('remove', 'li', function(e) {
+        e.preventDefault();
+        setTimeout(checkLi, 50);
+      });
+
+      users.remove(users.at(0));
+
+      function checkLi() {
+        assert.equal($('body').html(), '<ul><li><b>John</b></li></ul>');
+        done();
+      }
     });
   });
 
