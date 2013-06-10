@@ -80,11 +80,11 @@ blocks, [@subview](#subview) to render Backbone Views, [@run](#run) to run custo
 <div @if='-> user.isPremium()'>
 
 <!-- Subview: instantiate another view -->
-<div @subview(summary)='-> new SummaryView({ el: el })'>
+<div @subview(summary)='-> new SummaryView({ el: $el })'>
 
 <!-- Run an arbitrary view method -->
 <!-- (runs it again if attribute changes) -->
-<div @run(toggle)="attr('editable')">
+<div @run="attr('editable') -> view.toggle($el)">
 ~~~
 
 #### Loops
