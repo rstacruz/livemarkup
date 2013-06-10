@@ -81,20 +81,17 @@ testSuite('@each() collections', function() {
     });
     
     it('collection.remove', function() {
-      users.reset([{ name: 'John' }]);
+      users.reset([{ name: 'John' }, { name: 'Jacob' }]);
+      users.remove(users.at(0));
 
-      var user = new User({ name: 'Jacob' });
-      users.add(user);
-
-      var expected = '<ul><li><b>John</b></li><li><b>Jacob</b></li></ul>';
+      expected = '<ul><li><b>Jacob</b></li></ul>';
       assert.equal($('body').html(), expected);
-
-      users.remove(user);
     });
 
     it('model.destroy', function() {
       users.reset([{ name: 'Abel' }]);
       users.at(0).destroy();
+
       assert.equal($('body').html(), '<ul></ul>');
     });
     
