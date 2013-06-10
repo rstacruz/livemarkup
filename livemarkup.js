@@ -159,6 +159,7 @@
    */
 
   Template.prototype.initialize = function() {
+    this.on('destroy', function(e) { e.stopPropagation(); });
     this.directives = Template.fetchDirectives(this.$el, this);
 
     return this;
@@ -226,9 +227,16 @@
       });
 
       if (!stop) {
-        _.each(parent.children, function(child) {
-          if (child && child.nodeType === 1) walk(child);
+        var children = []; //parent.children;
+        _.each(parent.children, function(child) { children.push(child); });
+        _.each(children, function(child) {
+          if (child.nodeType === 1) walk(child);
         });
+
+        // for (var i=children.length-1; i>=0; --i) {
+        //   var child = children[i];
+        //   if (child && child.nodeType === 1) walk(child);
+        // }
       }
     }
 
