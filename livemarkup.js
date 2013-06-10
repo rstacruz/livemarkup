@@ -6,6 +6,8 @@
   else this.LM = lm;
 })(function($, _) {
 
+  var on = $.fn.on ? 'on' : 'bind';
+
   /**
    * Returns a template object.
    *
@@ -138,7 +140,7 @@
     //
     // Also, legacy jQuery support (.bind).
     //
-    (this.$el.on || this.$el.bind).apply(this.$el, arguments);
+    this.$el[on].apply(this.$el, arguments);
   };
 
   /**
@@ -437,11 +439,13 @@
     var scope = dir.$el;
 
     // For things that have multiple, you need to array'ify your values.
-    var radioOrCheck = 'input[type="radio"],input[type="checkbox"]';
-    var isMulti = scope.is(radioOrCheck + ',select[multiple]');
+    var radio = 'input[type="radio"]';
+    var check = 'input[type="checkbox"]';
+    var multiple = "select[multiple]";
+    var isMulti = scope.is([radio, check, multiple].join(","));
 
     // For multiples, make it work with its bretheren as well
-    if (scope.is(radioOrCheck)) {
+    if (scope.is(radio+","+check)) {
       var name = scope.attr('name');
       scope = scope.closest('form,:root').find('[name="'+name+'"]');
     }
@@ -449,15 +453,23 @@
     this.onrender = function() {
       // Get the value and transform it if need be.
       val = dir.getValue();
-      if (isMulti && !_.isArray(val)) val = [val];
 
       // Set the value.
-      scope.val(val);
+      if (scope.is(radio+","+check)) {
+        recheck(scope, val);
+      }
+      
+      // Multiple selection
+      else {
+        if (!_.isArray(val)) val = [val];
+        scope.val(val);
+      }
 
       // Bind an onchange.
       if (dir.attrib && !dir.bound) {
         dir.bound = true;
-        scope.on('change', onchange = function(e, v) {
+        // TODO bind via view?
+        scope[on]('change click', onchange = function(e, v) {
           dir.attrib.model.set(dir.attrib.field, scope.val());
         });
       }
@@ -678,6 +690,23 @@
     if (!action) { throw new Error("Livemarkup: No action named '"+name+"'"); }
 
     return action;
+  }
+
+  /**
+   * Given a list of elements (`scope`), deselect everything and only select
+   * the ones in val
+   * @api private
+   */
+
+  function recheck(scope, val) {
+    if ($.fn.prop) {
+      scope.filter(':checked').prop('checked', false);
+      scope.filter('[value="'+val+'"]').prop('checked', true);
+    } else {
+      // jQuery <=1.5
+      scope.filter(':checked').removeAttr('checked');
+      scope.filter('[value="'+val+'"]').attr('checked', true);
+    }
   }
 
 }(this.jQuery || this.Zepto || this.ender, _));

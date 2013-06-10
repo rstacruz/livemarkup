@@ -16,6 +16,7 @@ Done:
  * actions.class()
  * actions.value()
  * actions.value() two way binding
+ * actions.run()
 
 To do:
 

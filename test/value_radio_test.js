@@ -1,39 +1,72 @@
 var Setup = require('./setup');
 
 testSuite('@value() radio', function() {
-  var tpl, $el, model;
+  var model;
 
-  beforeEach(setModel);
   beforeEach(function() {
-    model.set('number', 'two');
-    render(
+    model = new Backbone.Model({ number: 'two' });
+    sinon.spy(model, 'get');
+    sinon.spy(model, 'set');
+
+    template(
+      "<form>" +
       "<input class='c1' type='radio' name='number' value='one' @value='attr(\"number\")' />" +
       "<input class='c2' type='radio' name='number' value='two' />" +
-      "<input class='c3' type='radio' name='number' value='three' />"
-    );
+      "<input class='c3' type='radio' name='number' value='three' />" +
+      "</form>"
+    ).bind(model).render();
   });
 
-  xit("should not change values", function() {
+  it("should not change values", function() {
     assert.equal('one', $('.c1').attr('value'));
     assert.equal('two', $('.c2').attr('value'));
     assert.equal('three', $('.c3').attr('value'));
   });
 
-  xit('(Not working) should set the right value', function() {
-    assert.equal($(':radio').val(), 'two');
+  it("get callcount", function() {
+    assert.equal(model.get.callCount, 1);
   });
 
-  xit('reverse binding', function() {
+  it("set callcount", function() {
+    assert.equal(model.set.callCount, 0);
+  });
+
+  it("unchecked", function() {
+    assert.isFalse($('.c1').is(':checked'));
+    assert.isFalse($('.c3').is(':checked'));
+  });
+
+  it("checked", function() {
+    assert.isTrue($('.c2').is(':checked'));
+  });
+
+  it('should set the right value', function() {
+    assert.equal(
+      j($('form').serializeArray()),
+      j([ { name: 'number', value: 'two' } ]));
+  });
+
+  // ----
+
+  describe("change", function() {
+    beforeEach(function() {
+      if ($.fn.frop)
+        $('.c1').prop('checked', true);
+      else
+        $('.c1').attr('checked', true);
+      $('.c1').trigger('change');
+    });
+
+    it('set callcount', function() {
+      assert.equal(model.set.callCount, 1);
+    });
+
+    it('reverse binding', function() {
+      assert.equal(model.get('number'), 'one');
+    });
   });
 
   // ---
 
-  function setModel() {
-    model = new Backbone.Model({ name: "John" });
-  }
-
-  function render(str) {
-    $el = $("<p>").appendTo("body").html(str);
-    tpl = new LM($el).bind(model).render();
-  }
+  function j(obj) { return JSON.stringify(obj); }
 });
