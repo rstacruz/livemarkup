@@ -99,7 +99,6 @@ Loops are supported using `@each`.
   </li>
 </ul>
 
-<!-- Object -->
 <ul @each:word:description='-> words'>
   <li>
     <input type='radio' @at:value='-> word' />

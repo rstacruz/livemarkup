@@ -499,7 +499,37 @@
   };
 
   function eachCollection(list, $list, $item, name, keyName, parent, dir) {
-    // TODO
+    var view = parent.view;
+    var subs = {};
+
+    listenVia(view, parent, list, 'add', append);
+    listenVia(view, parent, list, 'reset', reset);
+    listenVia(view, parent, list, 'remove', remove);
+
+    function reset(models) {
+      _.each(subs, function(tpl) { tpl.destroy(); tpl.$el.remove(); });
+      models.each(append);
+    }
+
+    function remove(model) {
+      var tpl = subs[model.cid];
+      if (tpl) { tpl.destroy(); tpl.$el.remove(); }
+    }
+
+    function append(model) {
+      // Create a subtemplate.
+      var tpl = LM($item.clone()).locals(parent.locals);
+      tpl.locals(name, model);
+      tpl.render();
+
+      // Add data-cid just because
+      // tpl.$el.attr('data-cid', model.cid);
+
+      // Use it.
+      $list.append(tpl.$el);
+      tpl.$el.trigger('append');
+      subs[model.cid] = tpl;
+    }
   }
 
   function eachArray(list, $list, $item, name, keyName, parent, dir) {
