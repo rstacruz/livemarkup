@@ -249,7 +249,6 @@ Actions
   * __@options__ - populates options for `<select>`
   * __@if__
   * __@include__
-  * __@subview__
 
 ### @text
 
