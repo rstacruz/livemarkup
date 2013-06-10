@@ -65,7 +65,7 @@ back to the model using [@value](#value).
 
 #### More features
 Use [@class](#class) to toggle class, [@at(...)](#at) to set attributes, [@if](#if) to show/hide
-blocks, [@subview](#subview) to render Backbone Views, [@run](#run) to run custom view code.
+blocks, [@run](#run) to run custom view code.
 
 ~~~ html
 <!-- uses class `active` if the model attribute `enabled` is truthy -->
@@ -79,12 +79,12 @@ blocks, [@subview](#subview) to render Backbone Views, [@run](#run) to run custo
 <div @if='attr(user, "premium")'>
 <div @if='-> user.isPremium()'>
 
-<!-- Subview: instantiate another view -->
-<div @subview(summary)='-> new SummaryView({ el: $el })'>
-
 <!-- Run an arbitrary view method -->
 <!-- (runs it again if attribute changes) -->
 <div @run="attr('editable') -> view.toggle($el)">
+
+<!-- Subview: instantiate another view -->
+<div @run='-> view.summary = new SummaryView({ el: $el })'>
 ~~~
 
 #### Loops
@@ -106,7 +106,7 @@ It even has explicit support for Backbone Collections which reacts to `add`,
 ~~~ html
 <!-- Looping over collections -->
 <ul @each(person)='-> model.people()'>
-  <li @subviews(peopleViews)='-> new PersonView({ el: el, model: person })'>
+  <li @run='-> new PersonView({ el: el, model: person })'>
   </li>
 </ul>
 ~~~
