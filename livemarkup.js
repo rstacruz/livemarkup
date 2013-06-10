@@ -453,15 +453,15 @@
     this.onrender = function() {
       // Get the value and transform it if need be.
       val = dir.getValue();
+      if (!_.isArray(val)) val = [val];
 
       // Set the value.
-      if (scope.is(radio+","+check)) {
+      if (scope.is(radio + ',' + check)) {
         recheck(scope, val);
       }
-      
+
       // Multiple selection
       else {
-        if (!_.isArray(val)) val = [val];
         scope.val(val);
       }
 
@@ -694,18 +694,23 @@
 
   /**
    * Given a list of elements (`scope`), deselect everything and only select
-   * the ones in val
+   * the ones in `[val]`
    * @api private
    */
 
   function recheck(scope, val) {
+    // Values selector
+    var values = _.map(val, function(v) { return '[value="' + v + '"]'; }).join(',');
+
     if ($.fn.prop) {
       scope.filter(':checked').prop('checked', false);
-      scope.filter('[value="'+val+'"]').prop('checked', true);
-    } else {
+      scope.filter(values).prop('checked', true);
+    }
+    
+    else {
       // jQuery <=1.5
       scope.filter(':checked').removeAttr('checked');
-      scope.filter('[value="'+val+'"]').attr('checked', true);
+      scope.filter(values).attr('checked', true);
     }
   }
 
