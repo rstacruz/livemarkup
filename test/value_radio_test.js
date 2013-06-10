@@ -11,8 +11,8 @@ testSuite('@value() radio', function() {
     template(
       "<form>" +
       "<input class='c1' type='radio' name='number' value='one' @value='attr(\"number\")' />" +
-      "<input class='c2' type='radio' name='number' value='two' />" +
-      "<input class='c3' type='radio' name='number' value='three' />" +
+      "<input class='c2' type='radio' name='number' value='two' @value='attr(\"number\")' />" +
+      "<input class='c3' type='radio' name='number' value='three' @value='attr(\"number\")' />" +
       "</form>"
     ).bind(model).render();
   });
@@ -24,7 +24,7 @@ testSuite('@value() radio', function() {
   });
 
   it("get callcount", function() {
-    assert.equal(model.get.callCount, 1);
+    assert.equal(model.get.callCount, 3);
   });
 
   it("set callcount", function() {
@@ -51,10 +51,11 @@ testSuite('@value() radio', function() {
   describe("change", function() {
     beforeEach(function() {
       if ($.fn.frop)
-        $('.c1').prop('checked', true);
+        $('.c3').prop('checked', true);
       else
-        $('.c1').attr('checked', true);
-      $('.c1').trigger('change');
+        $('.c3').attr('checked', true);
+
+      $('.c3').trigger('change');
     });
 
     it('set callcount', function() {
@@ -62,7 +63,7 @@ testSuite('@value() radio', function() {
     });
 
     it('reverse binding', function() {
-      assert.equal(model.get('number'), 'one');
+      assert.equal(model.get('number'), 'three');
     });
   });
 

@@ -6,7 +6,12 @@
   else this.LM = lm;
 })(function($, _) {
 
-  var on = $.fn.on ? 'on' : 'bind';
+
+  var on = $.fn.on ? 'on' : 'bind',
+    off = $.fn.off ? 'off' : 'unbind',
+    radio = 'input[type="radio"]',
+    check = 'input[type="checkbox"]',
+    multiple = "select[multiple]";
 
   /**
    * Returns a template object.
@@ -435,48 +440,35 @@
   Actions.value = function() {
     var dir = this;
     var template = this.template;
+    var $el = dir.$el;
     var onchange;
-    var scope = dir.$el;
-
-    // For things that have multiple, you need to array'ify your values.
-    var radio = 'input[type="radio"]';
-    var check = 'input[type="checkbox"]';
-    var multiple = "select[multiple]";
-    var isMulti = scope.is([radio, check, multiple].join(","));
-
-    // For multiples, make it work with its bretheren as well
-    if (scope.is(radio+","+check)) {
-      var name = scope.attr('name');
-      scope = scope.closest('form,:root').find('[name="'+name+'"]');
-    }
 
     this.onrender = function() {
       // Get the value and transform it if need be.
-      val = dir.getValue();
-      if (!_.isArray(val)) val = [val];
+      // (Array'ify it because $("select[multiple]").val() expects it, and so
+      // does `recheck()`)
+      var val = toArray(dir.getValue());
 
-      // Set the value.
-      if (scope.is(radio + ',' + check)) {
-        recheck(scope, val);
-      }
+      // Set the value; uncheck the false and check the true.
+      if ($el.is(radio + ',' + check))
+        recheck($el, val);
 
-      // Multiple selection
-      else {
-        scope.val(val);
-      }
+      // Account for <select multiple>
+      else
+        $el.val(val);
 
-      // Bind an onchange.
+      // Bind an onchange if there's a two-way binding (`attr('...')`).
+      // Ensure that it's bound only once (because onrender happens many times!)
       if (dir.attrib && !dir.bound) {
         dir.bound = true;
-        // TODO bind via view?
-        scope[on]('change click', onchange = function(e, v) {
-          dir.attrib.model.set(dir.attrib.field, scope.val());
+        $el[on]('change', onchange = function(e, v) {
+          dir.attrib.model.set(dir.attrib.field, $(this).val());
         });
       }
     };
 
     template.on('destroy', function() {
-      dir.$el.off('change', onchange);
+      if (dir.bound) $el[off]('change', onchange);
     });
   };
 
@@ -621,6 +613,10 @@
     return this;
   };
 
+  /**
+   * Formatter
+   */
+
   Modifiers.format = function(fn) {
     var dir = this.directive;
 
@@ -693,12 +689,19 @@
   }
 
   /**
-   * Given a list of elements (`scope`), deselect everything and only select
-   * the ones in `[val]`
+   * Given a checkbox or radio `$element`, deselect its bretheren and only
+   * select the ones in `[val]`.
+   *
+   * Essentially, it makes a bunch of radio/checkboxes work just like
+   * `$("select[multiple]").val([a, b, c]);`.
+   *
    * @api private
    */
 
-  function recheck(scope, val) {
+  function recheck($element, val) {
+    var name = $element.attr('name');
+    var scope = $element.closest('form,:root').find('[name="'+name+'"]');
+
     // Values selector
     var values = _.map(val, function(v) { return '[value="' + v + '"]'; }).join(',');
 
@@ -712,6 +715,15 @@
       scope.filter(':checked').removeAttr('checked');
       scope.filter(values).attr('checked', true);
     }
+  }
+
+  /**
+   * Converts a given `value` to an array.
+   * @api private
+   */
+
+  function toArray(value) {
+    return _.isArray(value) ? value : [value];
   }
 
 }(this.jQuery || this.Zepto || this.ender, _));
