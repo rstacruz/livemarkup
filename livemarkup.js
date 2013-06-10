@@ -482,14 +482,14 @@
     this.stop();
 
     var dir = this;
-    var template = this.template;
+    var template = dir.template;
 
     // Create a placeholder empty text code so we know where to ressurrent the
     // element later on.
     var $holder = $(createTextNodeAfter(this.$el));
 
     // Remove the element so we can append it later on.
-    var $el = this.$el.remove();
+    var $el = dir.$el.remove();
 
     // Render as a subtemplate.
     this.sub = LM($el).locals(template.localContext).bind(template.model);
@@ -516,6 +516,42 @@
 
   Actions.run = function() {
     this.onrender = function() { this.getValue(); };
+  };
+
+  /**
+   * Each
+   */
+
+  Actions.each = function(name) {
+    this.stop();
+
+    var dir = this;
+    var parent = dir.template;
+    var $list = dir.$el;
+    var $item = $list.find(">*").remove();
+    var keyName;
+
+    // Support key-value pairs (`@each(key,val)`)
+    if (name.indexOf(',') > -1) {
+      var m = name.split(',');
+      keyName = m[0]; name = m[1];
+    }
+
+    this.onrender = function() {
+      var list = this.getValue();
+
+      if (isCollection(list)) {
+      } else {
+        _.each(list, function(item, key) {
+          var tpl = LM($item.clone()).locals(parent.locals);
+          if (keyName) tpl.locals(keyName, key);
+          tpl.locals(name, item);
+          tpl.render();
+
+          $list.append(tpl.$el);
+        });
+      }
+    };
   };
 
   // ----------------------------------------------------------------------------
@@ -724,6 +760,15 @@
 
   function toArray(value) {
     return _.isArray(value) ? value : [value];
+  }
+
+  /**
+   * Checks if a given list responds like a Backbone.js collection.
+   * @api private
+   */
+
+  function isCollection(list) {
+    return list.each && list.on;
   }
 
 }(this.jQuery || this.Zepto || this.ender, _));

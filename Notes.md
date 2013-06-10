@@ -19,10 +19,11 @@ Done:
  * actions.run()
  * action.value() support for checkboxes
  * action.value() support for radios
+ * actions.each() for arrays
+ * actions.each() for objects
 
 To do:
 
- * actions.each() array
  * actions.each() collection
  * actions.each() - on add
  * actions.each() - on remove
