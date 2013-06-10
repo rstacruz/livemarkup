@@ -13,13 +13,24 @@ testSuite('@each() collections', function() {
     users = new Users();
   });
 
+  it('recurse locals', function() {
+    tpl = template(
+      "<ul @each:user='-> users'>" +
+        "<li><b @text='-> four'></b></li>" +
+      "</ul>"
+    ).locals({ users: users, four: 4 }).render();
+    users.add({});
+
+    assert.equal($('body').text(), '4');
+  });
+
   describe('from empty', function() {
     beforeEach(function() {
       tpl = template(
         "<ul @each:user='-> users'>" +
           "<li><b @text='attr(user, \"name\")'></b></li>" +
         "</ul>"
-      ).locals({ users: users }).render();
+      ).locals({ users: users, four: 4 }).render();
     });
 
     it('collection.add', function() {

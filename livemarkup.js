@@ -544,7 +544,8 @@
     // Appends a model and triggers it.
     function append(model) {
       // Create a subtemplate.
-      var tpl = LM($item.clone()).locals(parent.locals);
+      var tpl = LM($item.clone());
+      tpl.locals(parent.localContext);
       tpl.locals(name, model);
       tpl.render();
 
