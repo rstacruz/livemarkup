@@ -528,7 +528,7 @@
     var dir = this;
     var parent = dir.template;
     var $list = dir.$el;
-    var $item = $list.find(">*").remove();
+    var $item = $list.children().remove();
     var keyName;
 
     // Support key-value pairs (`@each(key,val)`)
