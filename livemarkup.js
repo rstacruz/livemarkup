@@ -347,11 +347,11 @@
   /**
    * Class toggling action.
    *
-   *     <div @class(enabled)='attr("enabled")'>
+   *     <div @class:enabled='attr("enabled")'>
    */
 
   Actions.class = function(className) {
-    className = className.replace(/\./g, ' ');
+    className = className.replace(/[:\.]/g, ' ');
 
     this.onrender = function() {
       var val = this.getValue();
