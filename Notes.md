@@ -21,15 +21,14 @@ Done:
  * action.value() support for radios
  * actions.each() for arrays
  * actions.each() for objects
-
-To do:
-
  * actions.each() collection
  * actions.each() - on add
  * actions.each() - on remove
  * actions.each() - on sort
  * actions.each() - on reset
  * actions.each() - on destroy
+
+To do:
 
  * attr('a1 a2') -- listen to multiple attributes
  * actions.options() -- for <select> options
