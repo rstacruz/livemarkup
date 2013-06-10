@@ -76,7 +76,7 @@
    */
 
   function Template($el) {
-    this.$el = $el;
+    this.$el = $($el);
     this.initialize = _.memoize(this.initialize);
     this.directives = [];
     this.localContext = {};
@@ -86,6 +86,10 @@
       this.view = $el;
       this.locals('view', $el);
       this.$el = $el.$el;
+    }
+
+    if ($el.length > 1) {
+      throw new Error("Template can't have more than one root element");
     }
   }
 
@@ -155,6 +159,7 @@
    */
 
   Template.prototype.initialize = function() {
+    this.on('destroy', function(e) { e.stopPropagation(); });
     this.directives = Template.fetchDirectives(this.$el, this);
 
     return this;
@@ -222,9 +227,16 @@
       });
 
       if (!stop) {
-        _.each(parent.children, function(child) {
+        var children = []; //parent.children;
+        _.each(parent.children, function(child) { children.push(child); });
+        _.each(children, function(child) {
           if (child.nodeType === 1) walk(child);
         });
+
+        // for (var i=children.length-1; i>=0; --i) {
+        //   var child = children[i];
+        //   if (child && child.nodeType === 1) walk(child);
+        // }
       }
     }
 
@@ -678,14 +690,18 @@
 
   /**
    * Iterates through each attribute of a given element.
+   *
+   * Loop backwards because we remove attributes as we go along; a forward
+   * iteration will not be reliable.
+   *
    * @api private
    */
 
   function eachAttribute(node, block) {
-    _.each(node.attributes, function(attr) {
-      if (attr && attr.nodeName)
-        block(attr.nodeName, attr.nodeValue);
-    });
+    for (var i=node.attributes.length-1; i>=0; --i) {
+      var attr = node.attributes[i];
+      block(attr.nodeName, attr.nodeValue);
+    }
   }
 
   /**

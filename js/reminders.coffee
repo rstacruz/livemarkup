@@ -6,23 +6,33 @@ class Reminder extends Backbone.Model
   toggleDone: ->
     @set 'done', not @get('done')
 
+# ----------------------------------------------------------------------------
+
 class Reminders extends Backbone.Collection
   model: Reminder
+
+# ----------------------------------------------------------------------------
 
 class ReminderView extends Backbone.View
   events:
     'click .checkbox': 'toggleDone'
+    'blur input': 'unedit'
+    'dblclick .show': 'edit'
 
   initialize: (options={}) ->
     @model = options.model
-    @state = new Backbone.Model
+    @state = new Backbone.Model()
 
   render: ->
     @$el.html Templates.item
+    @listenTo @state,
+      'change:editing': -> setTimeout (=> @$('input').focus()), 0
+
     @template = LM(this)
       .bind(@model)
       .locals(state: @state)
       .render()
+    this
 
   toggleDone: (e) =>
     @model.toggleDone()
@@ -30,6 +40,11 @@ class ReminderView extends Backbone.View
 
   edit: ->
     @state.set 'editing', true
+
+  unedit: ->
+    @state.set 'editing', false
+
+# ----------------------------------------------------------------------------
 
 class RemindersListView extends Backbone.View
   events:
@@ -47,11 +62,12 @@ class RemindersListView extends Backbone.View
         reminders: @reminders
         ReminderView: ReminderView
       ).render()
+    this
 
   addItem: ->
     reminder = new Reminder()
     @reminders.add reminder
-    # @editItem reminder
+    @editItem reminder
 
   editItem: (model) ->
     @subviews[model.cid]?.edit()
@@ -74,10 +90,16 @@ Templates =
   item: '''
     <div class='reminder-item'
       @class:done='attr("done")'
+      @at:a='attr("done")'
       @class:editing='attr(state, "editing")'
     >
-      <button class='checkbox'></button>
-      <strong @text='attr("title")'></strong>
+      <div class='show' @if='attr(state, "editing") -> !val'>
+        <button class='checkbox'></button>
+        <strong @text='attr("title")'></strong>
+      </div>
+      <div class='edit' @if='attr(state, "editing")'>
+        <input type="text" @value='attr("title")' />
+      </div>
     </div>
   '''
 
