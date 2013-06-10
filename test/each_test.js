@@ -16,9 +16,11 @@ testSuite('@each() arrays', function() {
     });
 
     it('should work', function() {
-      assert.match($('ul').text(), /Tom\s*Dick\s*Harry/);
+      assert.match($('ul').text(), /TomDickHarry/);
     });
   });
+
+  // ----
 
   describe('objects', function() {
     beforeEach(function() {
@@ -39,7 +41,24 @@ testSuite('@each() arrays', function() {
     });
   });
 
-  // ---
+  // ----
+
+  describe('multi elements', function() {
+    it('error', function() {
+      assert.throws(function() {
+        users = ['Tom', 'Dick', 'Harry'];
+
+        template(
+          '<ul @each(user)="-> users">' +
+            '<li>Name:</li>' +
+            '<li @html="-> user"></li>' +
+          '</ul>'
+        ).locals({ users: users }).render();
+      });
+    });
+  });
+
+  // ----
   
   describe('nested case', function() {
     beforeEach(function() {

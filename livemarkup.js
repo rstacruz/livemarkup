@@ -531,6 +531,9 @@
     var $item = $list.children().remove();
     var keyName;
 
+    if ($item.length !== 1)
+      throw new Error("@each: expected only 1 child node, found "+$item.length);
+
     // Support key-value pairs (`@each(key,val)`)
     if (name.indexOf(',') > -1) {
       var m = name.split(',');
