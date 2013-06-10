@@ -482,9 +482,9 @@
     if ($item.length !== 1)
       throw new Error("@each: expected only 1 child node, found "+$item.length);
 
-    // Support key-value pairs (`@each(key,val)`)
-    if (name.indexOf(',') > -1) {
-      var m = name.split(',');
+    // Support key-value pairs (`@each:key:val`)
+    if (name.indexOf(':') > -1) {
+      var m = name.split(':');
       keyName = m[0]; name = m[1];
     }
 
@@ -644,7 +644,9 @@
    * @api private
    */
   function parseDirective(name, value) {
-    var m = name.match(/^@([a-zA-Z0-9\_]+)(?:\(([^\)]+)\))?$/);
+    var m =
+      name.match(/^@([a-zA-Z0-9\_]+)(?::(.+))?$/) ||
+      name.match(/^@([a-zA-Z0-9\_]+)(?:\(([^\)]+)\))?$/); /* old syntax */
     if (!m) return;
 
     var re = {};

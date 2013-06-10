@@ -27,7 +27,7 @@ testSuite('@each() arrays', function() {
       users = { name: 'John', status: 'Single' };
 
       template(
-        '<ul @each(key,value)="-> users">' +
+        '<ul @each(key:value)="-> users">' +
           '<li>' +
             '<strong @text="-> key"></strong>: ' +
             '<span @text="-> value"></span>' +
@@ -65,7 +65,7 @@ testSuite('@each() arrays', function() {
       fields = { 'Gender': [ 'male', 'female' ], 'Status': [ 'single', 'married' ] };
 
       template(
-        '<ul @each(field,choices)="-> fields">' +
+        '<ul @each(field:choices)="-> fields">' +
           '<li>' +
             '<strong @text="-> field"></strong>' +
             '<ul @each(choice)="-> choices">' +
