@@ -3,40 +3,38 @@ Development notes
 
 Done:
 
- * actions.html()
- * actions.text()
- * actions.attr(model, 'attr')
+ * @html()
+ * @text()
+ * @attr(model, 'attr')
  * mods.on()
  * Locals
  * Directive#stop()
- * actions.html not continuing
+ * @html not continuing
  * Template#destroy()
- * actions.if()
- * actions.at()
- * actions.class()
- * actions.value()
- * actions.value() two way binding
- * actions.run()
- * action.value() support for checkboxes
- * action.value() support for radios
- * actions.each() for arrays
- * actions.each() for objects
- * actions.each() collection
- * actions.each() - on add
- * actions.each() - on remove
- * actions.each() - on sort
- * actions.each() - on reset
- * actions.each() - on destroy
+ * @if()
+ * @at()
+ * @class()
+ * @value()
+ * @value() two way binding
+ * @run()
+ * @alue() support for checkboxes
+ * @alue() support for radios
+ * @each() for arrays
+ * @each() for objects
+ * @each() collection
+ * @each() - on add
+ * @each() - on remove
+ * @each() - on sort
+ * @each() - on reset
+ * @each() - on destroy
 
 To do:
 
  * @unless
- * @showif
- * @showunless
 
  * attr('a1 a2') -- listen to multiple attributes
- * actions.options() -- for <select> options
- * actions.optgroups()
+ * @options() -- for <select> options
+ * @optgroups()
 
 ---
 
