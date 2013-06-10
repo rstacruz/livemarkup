@@ -511,6 +511,7 @@
    */
 
   Actions.run = function() {
+    this.onrender = function() { this.getValue(); };
   };
 
   // ----------------------------------------------------------------------------

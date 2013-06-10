@@ -111,7 +111,7 @@ function cache() {
  */
 
 function html(str) {
-  return $(str).appendTo('body');
+  return $(str.replace(/`/g, "'")).appendTo('body');
 }
 
 /**
