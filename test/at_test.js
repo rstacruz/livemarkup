@@ -18,7 +18,7 @@ testSuite('@at()', function() {
   it('double attrs', function() {
     template("<img @at:title='-> \"hello\"' @at(alt)='-> \"hi\"'>").render();
 
-    assert.equal($('body').html(), '<img title="hello" alt="hi" />');
+    assert.equal($('body').html(), '<img alt="hi" title="hello" />');
   });
 
   it('false values', function() {

@@ -35,7 +35,7 @@ testSuite('@class()', function() {
       "<div class='aaa' @class:active='attr(\"active\")' @class:enabled='attr(\"enabled\")'></div>"
     ).bind(model).render();
 
-    assert.equal($('body').html(), '<div class="aaa active enabled"></div>');
+    assert.equal($('body').html(), '<div class="aaa enabled active"></div>');
   });
 
 });
