@@ -540,19 +540,32 @@
     this.onrender = function() {
       var list = this.getValue();
 
-      if (isCollection(list)) {
-      } else {
-        _.each(list, function(item, key) {
-          var tpl = LM($item.clone()).locals(parent.locals);
-          if (keyName) tpl.locals(keyName, key);
-          tpl.locals(name, item);
-          tpl.render();
-
-          $list.append(tpl.$el);
-        });
-      }
+      if (isCollection(list))
+        eachCollection(list, $list, $item, name, keyName, parent, dir);
+      else
+        eachArray(list, $list, $item, name, keyName, parent, dir);
     };
   };
+
+  function eachCollection(list, $list, $item, name, keyName, parent, dir) {
+    // TODO
+  }
+
+  function eachArray(list, $list, $item, name, keyName, parent, dir) {
+    _.each(list, function(item, key) {
+      // Create a subtemplate.
+      var tpl = LM($item.clone()).locals(parent.locals);
+      if (keyName) tpl.locals(keyName, key);
+      tpl.locals(name, item);
+      tpl.render();
+
+      // Use it.
+      $list.append(tpl.$el);
+
+      // Make sure that the subtemplate will clean up.
+      parent.on('destroy', function() { tpl.destroy(); });
+    });
+  }
 
   // ----------------------------------------------------------------------------
 
@@ -630,21 +643,10 @@
     if (!model) { model = dir.model; }
     if (!model) { throw new Error("on(): no model to bind to"); }
 
-    // The callback to run when a model's event is triggered.
-    var fn = function() { dir.render(); };
-
-    // If a view is available, use Backbone's `listenTo()` facility so that
-    // removing a view will stop any events.
-    if (view && view.listenTo) {
-      view.listenTo(model, name, fn);
-      dir.template.on('destroy', function() { view.stopListening(model, name, fn); });
-    }
-    
-    // Otherwise, listen normally as you would.
-    else {
-      model.on(name, fn);
-      dir.template.on('destroy', function() { model.off(name, fn); });
-    }
+    // Create an event listener to `model`.
+    listenVia(view, template, model, name, function() {
+      dir.render();
+    });
 
     return this;
   };
@@ -770,5 +772,26 @@
   function isCollection(list) {
     return list.each && list.on;
   }
+
+  /**
+   * Listen to event `event` in `model` and call `callback`.
+   *
+   * If a `view` is available, use Backbone's `listenTo()` facility so that
+   * removing a view will stop any events.  Otherwise, listen normally as you
+   * would.
+   *
+   * @api private
+   */
+
+  function listenVia(view, template, model, event, callback) {
+    if (view && view.listenTo) {
+      view.listenTo(model, event, callback);
+      template.on('destroy', function() { view.stopListening(model, event, callback); });
+    } else {
+      model.on(event, callback);
+      template.on('destroy', function() { model.off(event, callback); });
+    }
+  }
+
 
 }(this.jQuery || this.Zepto || this.ender, _));
