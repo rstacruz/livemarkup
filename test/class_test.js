@@ -1,37 +1,41 @@
 var Setup = require('./setup');
 
 testSuite('@class()', function() {
-  var tpl, $parent, model;
-
-  it('should work', function() {
-    model.set('enabled', true);
-    render("<div @class:enabled='attr(\"enabled\")'></div>");
-
-    assert.equal($parent.html(), '<div class="enabled"></div>');
-  });
-
-  it('should work with existing', function() {
-    model.set('enabled', true);
-    render("<div class='active' @class:enabled='attr(\"enabled\")'></div>");
-
-    assert.equal($parent.html(), '<div class="active enabled"></div>');
-  });
-
-  it('multiple classes', function() {
-    model.set('enabled', true);
-    render("<div class='active' @class:enabled.is-enabled='attr(\"enabled\")'></div>");
-
-    assert.equal($parent.html(), '<div class="active enabled is-enabled"></div>');
-  });
-
-  // ---
+  var model;
 
   beforeEach(function() {
     model = new Backbone.Model();
   });
 
-  function render(str) {
-    $parent = $("<p>").appendTo("body").html(str);
-    tpl = new LM($parent).bind(model).render();
-  }
+  it('should work', function() {
+    model.set('enabled', true);
+    template("<div @class:enabled='attr(\"enabled\")'></div>").bind(model).render();
+
+    assert.equal($('body').html(), '<div class="enabled"></div>');
+  });
+
+  it('should work with existing', function() {
+    model.set('enabled', true);
+    template("<div class='active' @class:enabled='attr(\"enabled\")'></div>").bind(model).render();
+
+    assert.equal($('body').html(), '<div class="active enabled"></div>');
+  });
+
+  it('multiple classes', function() {
+    model.set('enabled', true);
+    template("<div class='active' @class:enabled.is-enabled='attr(\"enabled\")'></div>").bind(model).render();
+
+    assert.equal($('body').html(), '<div class="active enabled is-enabled"></div>');
+  });
+
+  it('multiple directives', function() {
+    model.set('active', true);
+    model.set('enabled', true);
+    template(
+      "<div class='aaa' @class:active='attr(\"active\")' @class:enabled='attr(\"enabled\")'></div>"
+    ).bind(model).render();
+
+    assert.equal($('body').html(), '<div class="aaa active enabled"></div>');
+  });
+
 });
