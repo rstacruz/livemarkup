@@ -507,6 +507,7 @@
     listenVia(view, parent, list, 'remove', remove);
     listenVia(view, parent, list, 'sort', sort);
 
+    // Reset first if it already has items
     if (list.length) reset(list);
 
     function add(model) {
@@ -802,7 +803,7 @@
   function triggerAndCheck($el, eventName) {
     var e = $.Event(eventName);
     $el.trigger(e);
-    return e.isDefaultPrevented;
+    return e.isDefaultPrevented();
   }
 
 }(this.jQuery || this.Zepto || this.ender, _));
