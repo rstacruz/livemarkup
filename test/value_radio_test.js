@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('@value() radio', function() {
+testSuite('@value() radio', function() {
   var tpl, $el, model;
 
   beforeEach(setModel);

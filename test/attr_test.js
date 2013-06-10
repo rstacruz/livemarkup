@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('attr()', function() {
+testSuite('attr()', function() {
   var tpl, $el, model;
 
   beforeEach(setModel);

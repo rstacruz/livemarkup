@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('if()', function() {
+testSuite('if()', function() {
   var tpl, $el, user, outerFn, innerFn;
 
   beforeEach(function() {

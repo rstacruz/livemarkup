@@ -11,7 +11,9 @@ var sourceCache = cache();
 // Helpers
 global.inspect = inspect;
 global.getFile = getFile;
-global.multi = multi;
+global.testSuite = testSuite;
+global.html = html;
+global.template = template;
 
 // Setup exports
 module.exports = { env: customEnv({ jquery: 'jquery-1.9.1' }) };
@@ -38,7 +40,7 @@ function inspect(obj) {
  * Runs a test context in multpile libs
  */
 
-function multi(name, fn) {
+function testSuite(name, fn) {
   // Run in just the default environment
   if (!process.env.full) {
     describe(name, function() {
@@ -102,4 +104,21 @@ function cache() {
     if (!hash[key]) hash[key] = fn();
     return hash[key];
   };
+}
+
+/**
+ * Render HTML
+ */
+
+function html(str) {
+  return $(str).appendTo('body');
+}
+
+/**
+ * Render template
+ */
+
+function template(str) {
+  var $parent = html(str);
+  return LM($parent);
 }

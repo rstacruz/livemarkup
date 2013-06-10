@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('locals', function() {
+testSuite('locals', function() {
   var tpl, model, $parent;
 
   beforeEach(function() {

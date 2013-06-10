@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('destroy', function() {
+testSuite('destroy', function() {
   var tpl, $parent, user;
 
   beforeEach(function() {

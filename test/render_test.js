@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('render', function() {
+testSuite('render', function() {
   var tpl, $parent, helper;
 
   beforeEach(function() {

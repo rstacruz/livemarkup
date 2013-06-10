@@ -1,38 +1,29 @@
 var Setup = require('./setup');
 
-describe('@at()', function() {
+testSuite('@at()', function() {
   var tpl, $parent, model;
 
-  beforeEach(Setup.env);
-
   it('should work', function() {
-    render("<img @at(title)='-> \"hello\"'>");
+    template('<img @at(title)=\'-> "hello"\'>').render();
 
-    assert.equal($parent.html(), '<img title="hello" />');
+    assert.equal($('body').html(), '<img title="hello" />');
   });
 
   it('double attrs', function() {
-    render("<img @at(title)='-> \"hello\"' @at(alt)='-> \"hi\"'>");
+    template("<img @at(title)='-> \"hello\"' @at(alt)='-> \"hi\"'>").render();
 
-    assert.equal($parent.html(), '<img title="hello" alt="hi" />');
+    assert.equal($('body').html(), '<img title="hello" alt="hi" />');
   });
 
   it('false values', function() {
-    render("<input type='text' @at(autofocus)='-> false' />");
+    template("<input type='text' @at(autofocus)='-> false' />").render();
 
-    assert.equal($parent.html(), '<input type="text" />');
+    assert.equal($('body').html(), '<input type="text" />');
   });
 
   it('true', function() {
-    render("<input type='text' @at(autofocus)='-> true' />");
+    template("<input type='text' @at(autofocus)='-> true' />").render();
 
-    assert.equal($parent.html(), '<input type="text" autofocus="autofocus" />');
+    assert.equal($('body').html(), '<input type="text" autofocus="autofocus" />');
   });
-
-  // ---
-
-  function render(str) {
-    $parent = $("<p>").appendTo("body").html(str);
-    tpl = new LM($parent).render();
-  }
 });

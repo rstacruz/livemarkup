@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('directives', function() {
+testSuite('directives', function() {
   var $parent, user;
 
   describe("basic case", function() {

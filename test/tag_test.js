@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('tag test', function() {
+testSuite('tag test', function() {
   var tpl, $parent;
 
   beforeEach(function() {

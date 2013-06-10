@@ -505,6 +505,14 @@
     template.on('destroy', function() { dir.sub.destroy(); });
   };
 
+  /**
+   * Runner.
+   * (Does nothing really, since the formatter will run it anyway)
+   */
+
+  Actions.run = function() {
+  };
+
   // ----------------------------------------------------------------------------
 
   function Context(dir) {

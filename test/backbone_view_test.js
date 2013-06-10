@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('backbone view test', function() {
+testSuite('backbone view test', function() {
   var tpl, $parent, model, view;
 
   it('should work', function() {

@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('@class()', function() {
+testSuite('@class()', function() {
   var tpl, $parent, model;
 
   it('should work', function() {

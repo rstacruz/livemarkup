@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('initialize count', function() {
+testSuite('initialize count', function() {
   var tpl, $parent, model;
 
   beforeEach(function() {

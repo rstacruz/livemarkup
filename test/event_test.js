@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi('events', function() {
+testSuite('events', function() {
   var tpl, model, $parent;
 
   beforeEach(setParent);

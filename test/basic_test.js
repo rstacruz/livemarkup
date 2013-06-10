@@ -1,6 +1,6 @@
 var Setup = require('./setup');
 
-multi("Livemarkup", function() {
+testSuite("Livemarkup", function() {
   it("is defined", function() {
     assert.isDefined(LM);
   });
