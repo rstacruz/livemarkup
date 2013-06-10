@@ -65,6 +65,14 @@
   /**
    * A template object representing a live DOM instance. The `LM(...)` function
    * returns a template instance. See [LM()] for more info.
+   *
+   * Has the following attribs:
+   *
+   *   - $el          : Root element
+   *   - directives   : Array of [Directive] instances
+   *   - model        : The model bound using [Template#bind()]
+   *   - view         : The associed Backbone view when instanciated via `LM(view)`
+   *   - localContext : Local object context as modified using [Template#locals()]
    */
 
   function Template($el) {
@@ -82,42 +90,6 @@
   }
 
   LM.template = Template;
-
-  /**
-   * The root element.
-   */
-
-  Template.prototype.$el = null;
-
-  /**
-   * Array of [Directive] instances.
-   * @api private
-   */
-
-  Template.prototype.directives = null;
-
-  /**
-   * The model bound using [Template#bind()].
-   */
-
-  Template.prototype.model = null;
-
-  /**
-   * The associated Backbone view when instanciated via `LM(view)`.
-   *
-   *     var view = new Backbone.View();
-   *     var tpl = LM(view);
-   *     // tpl.view === view
-   */
-
-  Template.prototype.view = null;
-
-  /**
-   * The local context as modified using [Template#locals()].
-   * @api private
-   */
-
-  Template.prototype.localContext = null;
 
   /**
    * Sets the target model of the template to the given object.
@@ -271,6 +243,8 @@
    *  - template     : instance of [Template]
    *  - $el          : element to be worked on
    *  - model        : model to be bound to (alias of [Template#model])
+   *  - onrender     : Function to be called on rendering; often overriden in an action
+   *  - ondestroy    : Function to be called on [Template#destroy()]
    *
    * Actions are ran in the context of an instance of this. Modifiers have
    * access to the directive using `this.directive`.
@@ -280,7 +254,7 @@
     this.$el = $(el);
     this.template = template;
     this.model = template.model;
-    this.formatters = [];
+    this._formatters = [];
     this._stopped = false;
 
     getAction(action).apply(this, [param]);
@@ -294,32 +268,6 @@
     var ctx = new Context(this);
     fn(ctx, this.$el, LM.helpers, template.localContext);
   }
-
-  /**
-   * Reference to parent [Template].
-   */
-  Directive.prototype.template = null;
-
-  /**
-   * Reference to model in the template. Equivalent to `template.model`.
-   */
-  Directive.prototype.model = null;
-
-  /**
-   * List of formatter functions.
-   */
-  Directive.prototype.formatters = null;
-
-  /**
-   * Function to be called on rendering. Usually overridden in an action.
-   */
-  Directive.prototype.onrender = null;
-
-  /**
-   * Function to be called when destroying ([Template#destroy()]). Usually
-   * overridden in an action.
-   */
-  Directive.prototype.ondestroy = null;
 
   /**
    * Stops processing down.
@@ -336,14 +284,14 @@
   /**
    * Returns the value of a given directive.
    *
-   * Runs all the `formatters` functions (as set by the modifiers) and returns
+   * Runs all the `_formatters` functions (as set by the modifiers) and returns
    * the final value.
    */
 
   Directive.prototype.getValue = function() {
     var dir = this;
 
-    return _.inject(this.formatters, function(val, fn) {
+    return _.inject(this._formatters, function(val, fn) {
       return fn.apply(dir, [val]);
     }, null);
   };
@@ -665,7 +613,7 @@
     var model = dir.model;
     if (model) fn = $.proxy(fn, model);
 
-    dir.formatters.push(fn);
+    dir._formatters.push(fn);
     return this;
   };
 
