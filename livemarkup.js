@@ -454,15 +454,20 @@
     var $el = dir.$el.remove();
 
     // Render as a subtemplate.
-    this.sub = LM($el).locals(template.localContext).bind(template.model);
+    this.sub = null;
 
     this.onrender = function() {
       if (this.getValue()) {
         $holder.after($el);
-        this.sub.render();
+        if (!this.sub) {
+          this.sub = LM($el).locals(template.localContext).bind(template.model).render();
+        }
       }
       else {
-        this.sub.destroy();
+        if (this.sub) {
+          this.sub.destroy();
+          delete this.sub;
+        }
         $el.remove();
       }
     };

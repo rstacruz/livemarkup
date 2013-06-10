@@ -21,4 +21,11 @@ testSuite('if()', function() {
     model.set('editing', true);
     assert.equal($('body').html(), '<div><strong>Editing</strong></div>');
   });
+
+  it('should respond multi times', function() {
+    model.set('editing', true);
+    model.set('editing', false);
+    model.set('editing', true);
+    assert.equal($('body').html(), '<div><strong>Editing</strong></div>');
+  });
 });
