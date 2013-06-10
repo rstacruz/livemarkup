@@ -683,7 +683,8 @@
 
   function eachAttribute(node, block) {
     _.each(node.attributes, function(attr) {
-      block(attr.nodeName, attr.nodeValue);
+      if (attr && attr.nodeName)
+        block(attr.nodeName, attr.nodeValue);
     });
   }
 
