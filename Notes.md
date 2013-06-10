@@ -17,6 +17,8 @@ Done:
  * actions.value()
  * actions.value() two way binding
  * actions.run()
+ * action.value() support for checkboxes
+ * action.value() support for radios
 
 To do:
 
@@ -28,16 +30,9 @@ To do:
  * actions.each() - on reset
  * actions.each() - on destroy
 
- * @value for checkboxes
- * @value for radios
  * attr('a1 a2') -- listen to multiple attributes
  * actions.options() -- for <select> options
  * actions.optgroups()
-
-Beyond (need design decisions):
-
- * actions.run()
- * actions.subview()
 
 ---
 
