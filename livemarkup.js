@@ -223,7 +223,7 @@
 
       if (!stop) {
         _.each(parent.children, function(child) {
-          if (child.nodeType === 1) walk(child);
+          if (child && child.nodeType === 1) walk(child);
         });
       }
     }
