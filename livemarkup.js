@@ -516,7 +516,11 @@
 
     function remove(model) {
       var tpl = subs[model.cid];
-      if (tpl) { tpl.destroy(); tpl.$el.trigger('remove').remove(); }
+      if (!tpl) return;
+
+      tpl.destroy();
+      var prevented = triggerAndCheck(tpl.$el, 'remove');
+      if (!prevented) tpl.$el.remove();
     }
 
     function reset(models) {
@@ -536,14 +540,12 @@
       });
     }
 
+    // Appends a model and triggers it.
     function append(model) {
       // Create a subtemplate.
       var tpl = LM($item.clone()).locals(parent.locals);
       tpl.locals(name, model);
       tpl.render();
-
-      // Add data-cid just because
-      // tpl.$el.attr('data-cid', model.cid);
 
       // Use it.
       $list.append(tpl.$el);
@@ -796,5 +798,11 @@
     }
   }
 
+  // Triggers and event and returns if the default was prevented.
+  function triggerAndCheck($el, eventName) {
+    var e = $.Event(eventName);
+    $el.trigger(e);
+    return e.isDefaultPrevented;
+  }
 
 }(this.jQuery || this.Zepto || this.ender, _));

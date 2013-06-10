@@ -45,6 +45,24 @@ testSuite('@each() collections', function() {
         tpl.on('append:reset', _.once(function() { done(); }));
         users.reset([{ name: 'John' }, { name: 'Jacob' }]);
       });
+
+      it('LI remove event suppression', function(done) {
+        if (!$.fn.on) return done(); /* jQ 1.6+ only */
+
+        users.reset([{ name: 'John' }]);
+
+        tpl.$el.on('remove', 'li', function(e) {
+          e.preventDefault();
+          setTimeout(checkLi, 50);
+        });
+
+        users.remove(users.at(0));
+
+        function checkLi() {
+          assert.equal($('body').html(), '<ul><li><b>John</b></li></ul>');
+          done();
+        }
+      });
     });
     
 
