@@ -502,10 +502,39 @@
     var view = parent.view;
     var subs = {};
 
-    listenVia(view, parent, list, 'add', append);
+    listenVia(view, parent, list, 'add', add);
     listenVia(view, parent, list, 'reset', reset);
     listenVia(view, parent, list, 'remove', remove);
     listenVia(view, parent, list, 'sort', sort);
+
+    if (list.length) reset(list);
+
+    function add(model) {
+      var tpl = append(model);
+      tpl.$el.trigger('append');
+    }
+
+    function remove(model) {
+      var tpl = subs[model.cid];
+      if (tpl) { tpl.destroy(); tpl.$el.trigger('remove').remove(); }
+    }
+
+    function reset(models) {
+      _.each(subs, function(tpl) { tpl.destroy(); tpl.$el.remove(); });
+      models.each(function(model) {
+        var tpl = append(model);
+        tpl.$el.trigger('append:reset');
+      });
+      parent.trigger('reset');
+    }
+
+    // Sort by re-appending them one-by-one.
+    function sort(models) {
+      models.each(function(model) {
+        var tpl = subs[model.cid];
+        if (tpl) $list.append(tpl.$el);
+      });
+    }
 
     function append(model) {
       // Create a subtemplate.
@@ -518,26 +547,8 @@
 
       // Use it.
       $list.append(tpl.$el);
-      tpl.$el.trigger('append');
       subs[model.cid] = tpl;
-    }
-
-    function remove(model) {
-      var tpl = subs[model.cid];
-      if (tpl) { tpl.destroy(); tpl.$el.trigger('remove').remove(); }
-    }
-
-    function reset(models) {
-      _.each(subs, function(tpl) { tpl.destroy(); tpl.$el.remove(); });
-      models.each(append);
-    }
-
-    // Sort by re-appending them one-by-one.
-    function sort(models) {
-      models.each(function(model) {
-        var tpl = subs[model.cid];
-        if (tpl) $list.append(tpl.$el);
-      });
+      return tpl;
     }
   }
 
