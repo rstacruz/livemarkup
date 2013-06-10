@@ -159,7 +159,7 @@
    */
 
   Template.prototype.initialize = function() {
-    this.on('destroy', function(e) { e.stopPropagation(); });
+    this.on('destroy', function(e) { e.stopImmediatePropagation(); });
     this.directives = Template.fetchDirectives(this.$el, this);
 
     return this;
