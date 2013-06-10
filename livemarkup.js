@@ -678,14 +678,18 @@
 
   /**
    * Iterates through each attribute of a given element.
+   *
+   * Loop backwards because we remove attributes as we go along; a forward
+   * iteration will not be reliable.
+   *
    * @api private
    */
 
   function eachAttribute(node, block) {
-    _.each(node.attributes, function(attr) {
-      if (attr && attr.nodeName)
-        block(attr.nodeName, attr.nodeValue);
-    });
+    for (var i=node.attributes.length-1; i>=0; --i) {
+      var attr = node.attributes[i];
+      block(attr.nodeName, attr.nodeValue);
+    }
   }
 
   /**
