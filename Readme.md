@@ -69,10 +69,10 @@ blocks, [@run](#run) to run custom view code.
 
 ~~~ html
 <!-- uses class `active` if the model attribute `enabled` is truthy -->
-<div @class(active)='attr("enabled")'>
+<div @class:active='attr("enabled")'>
 
 <!-- attributes -->
-<input @at(type)='attr("input_type")'>
+<input @at:type='attr("input_type")'>
 
 <!-- Showing and hiding blocks as needed -->
 <div @if='attr("premium")'>
@@ -92,10 +92,18 @@ Loops are supported using `@each`.
 
 ~~~ html
 <!-- Arrays -->
-<ul @each(person)='-> people'>
+<ul @each:person='-> people'>
   <li>
     <strong @text='-> person.name'></strong>
     <small  @text='-> person.title'></small>
+  </li>
+</ul>
+
+<!-- Object -->
+<ul @each:word:description='-> words'>
+  <li>
+    <input type='radio' @at:value='-> word' />
+    <label @text='-> description'></label>
   </li>
 </ul>
 ~~~
@@ -105,7 +113,7 @@ It even has explicit support for Backbone Collections which reacts to `add`,
 
 ~~~ html
 <!-- Looping over collections -->
-<ul @each(person)='-> model.people()'>
+<ul @each:person='-> model.people()'>
   <li @run='-> new PersonView({ el: el, model: person })'>
   </li>
 </ul>
@@ -244,11 +252,11 @@ Actions
   * __@text__ - sets the text
   * __@html__ - sets inner html
   * __@value__ - creates a two-way binding
-  * __@at(name)__ - sets an attribute
-  * __@class(name)__ - toggles a classname
+  * __@at:name__ - sets an attribute
+  * __@class:name__ - toggles a classname
   * __@options__ - populates options for `<select>`
-  * __@if__
-  * __@include__
+  * __@if__ - toggles the existence of an element
+  * __@each:name__ - iterates through an array/collection
 
 ### @text
 
