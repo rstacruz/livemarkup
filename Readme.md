@@ -316,8 +316,6 @@ Creates a template object.
 
 To be written.
 
-# Misc
-
 Integration
 ===========
 
@@ -368,6 +366,9 @@ templates?
       %strong{ '@text' => '-> person.name' }
       ...
 ~~~
+
+Misc
+====
 
 Acknowledgements
 ----------------
