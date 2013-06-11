@@ -92,14 +92,14 @@ Loops are supported using `@each`.
 
 ~~~ html
 <!-- Arrays -->
-<ul @each:person='-> people'>
+<ul @each='person in -> people'>
   <li>
     <strong @text='-> person.name'></strong>
     <small  @text='-> person.title'></small>
   </li>
 </ul>
 
-<ul @each:word:description='-> words'>
+<ul @each='word, description in -> words'>
   <li>
     <input type='radio' @at:value='-> word' />
     <label @text='-> description'></label>
@@ -112,7 +112,7 @@ It even has explicit support for Backbone Collections which reacts to `add`,
 
 ~~~ html
 <!-- Looping over collections -->
-<ul @each:person='-> model.people()'>
+<ul @each='person in -> model.people()'>
   <li @run='-> new PersonView({ el: el, model: person })'>
   </li>
 </ul>
@@ -255,7 +255,7 @@ Actions
   * __@class:name__ - toggles a classname
   * __@options__ - populates options for `<select>`
   * __@if__ - toggles the existence of an element
-  * __@each:name__ - iterates through an array/collection
+  * __@each__ - iterates through an array/collection
 
 ### @text
 
@@ -342,7 +342,7 @@ class MyView extends Backbone.View
 
   markup: jade.compile """
     h3 Users
-    ul(@each:person="-> people")
+    ul(@each="person in -> people")
       li
         | Name:
         strong(@text="-> person.name")
@@ -359,7 +359,7 @@ templates?
 
 ~~~ html
 %script{type: 'text/template', id: 'person_show'}
-  %ul{ '@each:person' => '-> people' }
+  %ul{ '@each' => 'person in -> people' }
     %li
       Name:
       %strong{ '@text' => '-> person.name' }
