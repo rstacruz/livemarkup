@@ -6,12 +6,29 @@
   else this.LM = lm;
 })(function($, _) {
 
-
   var on = $.fn.on ? 'on' : 'bind',
     off = $.fn.off ? 'off' : 'unbind',
     radio = 'input[type="radio"]',
     check = 'input[type="checkbox"]',
     multiple = "select[multiple]";
+
+  /**
+   * The syntax for directives.
+   * This allows for `@each`, `lm-each`, `lm_each`, `lm:each`, `data-lm-each`,
+   * taking cue from Angular's format to make it optionally HTML validator compliant.
+   */
+
+  var dirFormat = {
+    prefix: /(?:@|lm-|lm_|lm:|data-lm-)/,
+    action: /([a-zA-Z0-9\_]+)/,
+    param: /(?::(.+))?/
+  };
+
+  var dirMatcher = new RegExp(
+    '^' +
+    dirFormat.prefix.source +
+    dirFormat.action.source +
+    dirFormat.param.source + '$');
 
   /**
    * Returns a template object.
@@ -794,9 +811,7 @@
    * @api private
    */
   function parseDirective(name, value) {
-    var m =
-      name.match(/^@([a-zA-Z0-9\_]+)(?::(.+))?$/) ||
-      name.match(/^@([a-zA-Z0-9\_]+)(?:\(([^\)]+)\))?$/); /* old syntax */
+    var m = name.match(dirMatcher);
     if (!m) return;
 
     var re = {};
