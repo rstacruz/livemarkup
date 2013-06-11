@@ -1,63 +1,52 @@
 .title-card {
-  background: #ccc;
+  background: #505060;
 }
-
 .reminders {
   margin: 0 auto;
-}
-
-.reminders {
-  background: white;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+  background: #fff;
+  -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 1px rgba(0,0,0,0.2);
   width: 250px;
+  -webkit-border-radius: 3px;
   border-radius: 3px;
 }
-
 .reminders h3 {
-  background: orange;
-  color: white;
+  background: #ffa500;
+  color: #fff;
   font-weight: bold;
   padding: 5px 20px;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
 }
-
 .reminders .list {
   height: 210px;
   overflow-y: auto;
 }
-
-/* Item */
 .reminder-item {
   padding: 7px 20px;
   border-bottom: solid 1px #eee;
 }
-
 .reminder-item.done {
   color: #a0a0b0;
 }
-
 .reminder-item .checkbox {
   margin: 0;
   padding: 0;
   cursor: pointer;
-
   display: inline-block;
   vertical-align: middle;
   text-align: center;
-
   width: 12px;
   height: 12px;
   background: #f3f3f3;
   border: solid 1px #ddd;
+  -webkit-border-radius: 2px;
   border-radius: 2px;
   margin-right: 8px;
 }
-
 .reminder-item.done .checkbox:before {
   content: 'x';
 }
-
 .add-new-box {
   padding: 7px 20px;
 }

@@ -4,7 +4,8 @@ stylus := ./node_modules/.bin/stylus -u nib
 
 all: \
 	assets/vendor.js \
-	assets/site.js
+	assets/site.js \
+	assets/style.css
 
 assets/vendor.js: \
 	vendor/jquery-1.9.1.js \
@@ -18,6 +19,9 @@ assets/site.js: \
 
 assets/%.js: src/%.coffee
 	$(coffee) -s -c < $^ > $@
+
+assets/%.css: src/%.styl $(shell find src/*.styl)
+	$(stylus) < $< > $@
 
 watch:
 	while true; do make | grep -v "Nothing"; sleep 1; done
