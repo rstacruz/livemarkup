@@ -15,7 +15,7 @@ testSuite('@each() collections', function() {
 
   it('recurse locals', function() {
     tpl = template(
-      "<ul @each:user='-> users'>" +
+      "<ul @each='user in -> users'>" +
         "<li><b @text='-> four'></b></li>" +
       "</ul>"
     ).locals({ users: users, four: 4 }).render();
@@ -27,7 +27,7 @@ testSuite('@each() collections', function() {
   describe('from empty', function() {
     beforeEach(function() {
       tpl = template(
-        "<ul @each:user='-> users'>" +
+        "<ul @each='user in -> users'>" +
           "<li><b @text='attr(user, \"name\")'></b></li>" +
         "</ul>"
       ).locals({ users: users, four: 4 }).render();
@@ -87,7 +87,7 @@ testSuite('@each() collections', function() {
       users = new Users([{ name: 'John' }, { name: 'Jacob' }]);
 
       template(
-        "<ul @each:user='-> users'>" +
+        "<ul @each='user in -> users'>" +
           "<li><b @text='attr(user, \"name\")'></b></li>" +
         "</ul>"
       ).locals({ users: users }).render();
@@ -104,7 +104,7 @@ testSuite('@each() collections', function() {
       users = new Users();
 
       tpl = template(
-        "<ul @each:user='-> users'>" +
+        "<ul @each='user in -> users'>" +
           "<li><b @text='attr(user, \"name\")'></b></li>" +
         "</ul>"
       ).locals({ users: users }).render();

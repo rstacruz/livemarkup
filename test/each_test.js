@@ -9,7 +9,7 @@ testSuite('@each() arrays', function() {
       users = ['Tom', 'Dick', 'Harry'];
 
       template(
-        '<ul @each:user="-> users">' +
+        '<ul @each="user in -> users">' +
           '<li @html="-> user"></li>' +
         '</ul>'
       ).locals({ users: users }).render();
@@ -27,7 +27,7 @@ testSuite('@each() arrays', function() {
       users = { name: 'John', status: 'Single' };
 
       template(
-        '<ul @each:key:value="-> users">' +
+        '<ul @each="key, value in -> users">' +
           '<li>' +
             '<strong @text="-> key"></strong>: ' +
             '<span @text="-> value"></span>' +
@@ -49,7 +49,7 @@ testSuite('@each() arrays', function() {
         users = ['Tom', 'Dick', 'Harry'];
 
         template(
-          '<ul @each:user="-> users">' +
+          '<ul @each="user in -> users">' +
             '<li>Name:</li>' +
             '<li @html="-> user"></li>' +
           '</ul>'
@@ -65,10 +65,10 @@ testSuite('@each() arrays', function() {
       fields = { 'Gender': [ 'male', 'female' ], 'Status': [ 'single', 'married' ] };
 
       template(
-        '<ul @each:field:choices="-> fields">' +
+        '<ul @each="field, choices in -> fields">' +
           '<li>' +
             '<strong @text="-> field"></strong>' +
-            '<ul @each:choice="-> choices">' +
+            '<ul @each="choice in -> choices">' +
               '<li @text="-> choice"></li>' +
             '</ul>' +
           '</li>' +

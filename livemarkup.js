@@ -489,36 +489,39 @@
    * Each
    */
 
-  Actions.each = function(name) {
+  Actions.each = function() {
     this.stop();
 
     var dir = this;
     var parent = dir.template;
     var $list = dir.$el;
     var $item = $list.children().remove();
-    var expr = this.expr(this.value);
-    var keyName;
+    var m = dir.value.match(/^(.*?)(?:,\s*(.*?))? in (.*)$/);
+    if (!m) throw new Error("@each: unexpected format");
+
+    var expr = dir.expr(m[3]);
+    var valName, keyName;
+
+    if (m[2]) {
+      keyName = m[1]; valName = m[2];
+    } else {
+      valName = m[1];
+    }
 
     if ($item.length !== 1)
       throw new Error("@each: expected only 1 child node, found "+$item.length);
-
-    // Support key-value pairs (`@each:key:val`)
-    if (name.indexOf(':') > -1) {
-      var m = name.split(':');
-      keyName = m[0]; name = m[1];
-    }
 
     this.onrender = function() {
       var list = expr.value();
 
       if (isCollection(list))
-        eachCollection(list, $list, $item, name, keyName, parent, dir);
+        eachCollection(list, $list, $item, valName, keyName, parent, dir);
       else
-        eachArray(list, $list, $item, name, keyName, parent, dir);
+        eachArray(list, $list, $item, valName, keyName, parent, dir);
     };
   };
 
-  function eachCollection(list, $list, $item, name, keyName, parent, dir) {
+  function eachCollection(list, $list, $item, valName, keyName, parent, dir) {
     var view = parent.view;
     var subs = {};
 
@@ -566,7 +569,7 @@
       // Create a subtemplate.
       var tpl = LM($item.clone());
       tpl.locals(parent.localContext);
-      tpl.locals(name, model);
+      tpl.locals(valName, model);
       tpl.render();
 
       // Use it.
@@ -576,12 +579,12 @@
     }
   }
 
-  function eachArray(list, $list, $item, name, keyName, parent, dir) {
+  function eachArray(list, $list, $item, valName, keyName, parent, dir) {
     _.each(list, function(item, key) {
       // Create a subtemplate.
       var tpl = LM($item.clone()).locals(parent.locals);
       if (keyName) tpl.locals(keyName, key);
-      tpl.locals(name, item);
+      tpl.locals(valName, item);
       tpl.render();
 
       // Use it.
@@ -612,7 +615,7 @@
    */
 
   function Expression(code, directive) {
-    this.code = code;
+    this.code = Expression.expand(code);
     this.directive = directive;
     this._formatters = [];
   }
@@ -640,6 +643,23 @@
     fn(ctx, this.directive.$el, LM.helpers, this.directive.template.localContext);
 
     return this;
+  };
+
+  /**
+   * Expands the shortcuts in the expression code.
+   *
+   *      expand("attr('n') -> val.toUpperCase()")
+   *      // =>  "attr('n').format(function(val) { return (val.toUpperCase()); });"
+   *
+   * @api private
+   */
+
+  Expression.expand = function(code) {
+    return code
+      .replace(/-> (.*)$/, function(_, fn) {
+        return '.format(function(val) { return ('+fn+'); })';
+      })
+     .replace(/^(\.+)/, '');
   };
 
   // ----------------------------------------------------------------------------
@@ -782,11 +802,7 @@
     var re = {};
     re.action = m[1];
     re.param = m[2];
-    re.value = value
-      .replace(/-> (.*)$/, function(_, fn) {
-        return '.format(function(val) { return ('+fn+'); })';
-      })
-     .replace(/^(\.+)/, '');
+    re.value = value;
 
     return re;
   }
