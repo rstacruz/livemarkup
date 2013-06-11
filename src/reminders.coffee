@@ -76,9 +76,12 @@ class RemindersListView extends Backbone.View
 
 Templates =
   list: '''
-    <h3>Reminders</h3>
+    <h3>
+      <span @text="on(reminders, 'add remove reset') -> reminders.length"></span>
+      Reminders
+    </h3>
     <div class='list'>
-      <ul @each:item='-> reminders'>
+      <ul @each='item in -> reminders'>
         <li @run='-> view.subviews[item.cid] = new ReminderView({ el: $el, model: item }).render()'>
         </li>
       </ul>

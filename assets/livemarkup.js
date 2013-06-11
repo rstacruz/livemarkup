@@ -259,6 +259,7 @@
    *  - model        : model to be bound to (alias of [Template#model])
    *  - onrender     : Function to be called on rendering; often overriden in an action
    *  - ondestroy    : Function to be called on [Template#destroy()]
+   *  - value        : The attribute value string, raw and unevaluated
    *
    * Actions are ran in the context of an instance of this. Modifiers have
    * access to the directive using `this.directive`.
@@ -268,19 +269,11 @@
     this.$el = $(el);
     this.template = template;
     this.model = template.model;
-    this._formatters = [];
+    this.value = value;
     this._stopped = false;
 
+    // Run the action initialization
     getAction(action).apply(this, [param]);
-
-    // Build the runner
-    var code = 'ctx.' + value + ';';
-    code = 'with(locals){with(helpers){' + code + '}}';
-    var fn = new Function('ctx', '$el', 'helpers', 'locals', code);
-
-    // Run it
-    var ctx = new Context(this);
-    fn(ctx, this.$el, LM.helpers, template.localContext);
   }
 
   /**
@@ -296,18 +289,11 @@
   };
 
   /**
-   * Returns the value of a given directive.
-   *
-   * Runs all the `_formatters` functions (as set by the modifiers) and returns
-   * the final value.
+   * Creates a new expression and runs its modifiers.
    */
 
-  Directive.prototype.getValue = function() {
-    var dir = this;
-
-    return _.inject(this._formatters, function(val, fn) {
-      return fn.apply(dir, [val]);
-    }, null);
+  Directive.prototype.expr = function(str) {
+    return new Expression(str, this).run();
   };
 
   /**
@@ -340,7 +326,8 @@
     // obliterated anyway.
     this.stop();
 
-    this.onrender = function() { this.$el.text(this.getValue()); };
+    var expr = this.expr(this.value);
+    this.onrender = function() { this.$el.text(expr.value()); };
   };
 
   /**
@@ -350,8 +337,10 @@
    */
 
   Actions.at = function(name) {
+    var expr = this.expr(this.value);
+
     this.onrender = function() {
-      var val = this.getValue();
+      var val = expr.value();
       if (val === false) this.$el.removeAttr(name);
 
       else this.$el.attr(name, val);
@@ -366,9 +355,10 @@
 
   Actions.class = function(className) {
     className = className.replace(/[:\.]/g, ' ');
+    var expr = this.expr(this.value);
 
     this.onrender = function() {
-      var val = this.getValue();
+      var val = expr.value();
 
       this.$el.toggleClass(className, !!val);
     };
@@ -384,12 +374,14 @@
    */
 
   Actions.html = function() {
+    var expr = this.expr(this.value);
+
     // There's no need to parse out any directives inside it: they will be
     // obliterated anyway.
     this.stop();
 
     this.onrender = function() {
-      this.$el.html(this.getValue());
+      this.$el.html(expr.value());
     };
   };
 
@@ -403,13 +395,14 @@
     var dir = this;
     var template = this.template;
     var $el = dir.$el;
+    var expr = this.expr(this.value);
     var onchange;
 
     this.onrender = function() {
       // Get the value and transform it if need be.
       // (Array'ify it because $("select[multiple]").val() expects it, and so
       // does `recheck()`)
-      var val = toArray(dir.getValue());
+      var val = toArray(expr.value());
 
       // Set the value; uncheck the false and check the true.
       if ($el.is(radio + ',' + check))
@@ -445,6 +438,7 @@
 
     var dir = this;
     var template = dir.template;
+    var expr = this.expr(this.value);
 
     // Create a placeholder empty text code so we know where to ressurrent the
     // element later on.
@@ -458,7 +452,7 @@
     this.sub = null;
 
     this.onrender = function() {
-      if (this.getValue()) {
+      if (expr.value()) {
         $el = $blueprint.clone();
         $holder.after($el);
         if (!this.sub) {
@@ -487,42 +481,47 @@
    */
 
   Actions.run = function() {
-    this.onrender = function() { this.getValue(); };
+    var expr = this.expr(this.value);
+    this.onrender = function() { expr.value(); };
   };
 
   /**
    * Each
    */
 
-  Actions.each = function(name) {
+  Actions.each = function() {
     this.stop();
 
     var dir = this;
     var parent = dir.template;
     var $list = dir.$el;
     var $item = $list.children().remove();
-    var keyName;
+    var m = dir.value.match(/^(.*?)(?:,\s*(.*?))? in (.*)$/);
+    if (!m) throw new Error("@each: unexpected format");
+
+    var expr = dir.expr(m[3]);
+    var valName, keyName;
+
+    if (m[2]) {
+      keyName = m[1]; valName = m[2];
+    } else {
+      valName = m[1];
+    }
 
     if ($item.length !== 1)
       throw new Error("@each: expected only 1 child node, found "+$item.length);
 
-    // Support key-value pairs (`@each:key:val`)
-    if (name.indexOf(':') > -1) {
-      var m = name.split(':');
-      keyName = m[0]; name = m[1];
-    }
-
     this.onrender = function() {
-      var list = this.getValue();
+      var list = expr.value();
 
       if (isCollection(list))
-        eachCollection(list, $list, $item, name, keyName, parent, dir);
+        eachCollection(list, $list, $item, valName, keyName, parent, dir);
       else
-        eachArray(list, $list, $item, name, keyName, parent, dir);
+        eachArray(list, $list, $item, valName, keyName, parent, dir);
     };
   };
 
-  function eachCollection(list, $list, $item, name, keyName, parent, dir) {
+  function eachCollection(list, $list, $item, valName, keyName, parent, dir) {
     var view = parent.view;
     var subs = {};
 
@@ -570,7 +569,7 @@
       // Create a subtemplate.
       var tpl = LM($item.clone());
       tpl.locals(parent.localContext);
-      tpl.locals(name, model);
+      tpl.locals(valName, model);
       tpl.render();
 
       // Use it.
@@ -580,12 +579,12 @@
     }
   }
 
-  function eachArray(list, $list, $item, name, keyName, parent, dir) {
+  function eachArray(list, $list, $item, valName, keyName, parent, dir) {
     _.each(list, function(item, key) {
       // Create a subtemplate.
       var tpl = LM($item.clone()).locals(parent.locals);
       if (keyName) tpl.locals(keyName, key);
-      tpl.locals(name, item);
+      tpl.locals(valName, item);
       tpl.render();
 
       // Use it.
@@ -598,8 +597,76 @@
 
   // ----------------------------------------------------------------------------
 
-  function Context(dir) {
-    this.directive = dir;
+  /**
+   * An expression.
+   *
+   *     var str = "attr('name') -> val.toUpperCase()";
+   *
+   *     var expr = new Expression(str, dir);
+   *
+   *     // Actually does the binding to the 'name' attribute
+   *     expr.run();
+   *
+   *     // Shortcut to new Expr().run():
+   *     var expr = dir.expr(str);
+   *
+   *     // Returns the value of the name
+   *     expr.value();
+   */
+
+  function Expression(code, directive) {
+    this.code = Expression.expand(code);
+    this.directive = directive;
+    this._formatters = [];
+  }
+
+  /**
+   * Returns the value of an expression.
+   */
+
+  Expression.prototype.value = function() {
+    var dir = this.directive;
+
+    return _.inject(this._formatters, function(val, fn) {
+      return fn.apply(dir, [val]);
+    }, null);
+  };
+
+  /**
+   * Runs the given expression.
+   */
+
+  Expression.prototype.run = function() {
+    var src = 'with(locals){with(helpers){ctx.' + this.code + ';}}';
+    var fn = new Function('ctx', '$el', 'helpers', 'locals', src);
+    var ctx = new ExpressionContext(this);
+    fn(ctx, this.directive.$el, LM.helpers, this.directive.template.localContext);
+
+    return this;
+  };
+
+  /**
+   * Expands the shortcuts in the expression code.
+   *
+   *      expand("attr('n') -> val.toUpperCase()")
+   *      // =>  "attr('n').format(function(val) { return (val.toUpperCase()); });"
+   *
+   * @api private
+   */
+
+  Expression.expand = function(code) {
+    return code
+      .replace(/-> (.*)$/, function(_, fn) {
+        return '.format(function(val) { return ('+fn+'); })';
+      })
+     .replace(/^(\.+)/, '');
+  };
+
+  // ----------------------------------------------------------------------------
+
+  function ExpressionContext(expr) {
+    this.expression = expr;
+    this.directive = expr.directive;
   }
 
   /**
@@ -630,7 +697,7 @@
    *     }
    */
 
-  var Modifiers = Context.prototype;
+  var Modifiers = ExpressionContext.prototype;
   LM.modfiers = Modifiers;
 
   /**
@@ -691,7 +758,7 @@
     var model = dir.model;
     if (model) fn = $.proxy(fn, model);
 
-    dir._formatters.push(fn);
+    this.expression._formatters.push(fn);
     return this;
   };
 
@@ -735,11 +802,7 @@
     var re = {};
     re.action = m[1];
     re.param = m[2];
-    re.value = value
-      .replace(/-> (.*)$/, function(_, fn) {
-        return '.format(function(val) { return ('+fn+'); })';
-      })
-     .replace(/^(\.+)/, '');
+    re.value = value;
 
     return re;
   }
