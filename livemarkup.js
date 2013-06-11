@@ -273,14 +273,9 @@
 
     getAction(action).apply(this, [param]);
 
-    // Build the runner
-    var code = 'ctx.' + value + ';';
-    code = 'with(locals){with(helpers){' + code + '}}';
-    var fn = new Function('ctx', '$el', 'helpers', 'locals', code);
-
     // Run it
-    var ctx = new Context(this);
-    fn(ctx, this.$el, LM.helpers, template.localContext);
+    this.expression = new Expression(value, this);
+    this.expression.run();
   }
 
   /**
@@ -303,11 +298,7 @@
    */
 
   Directive.prototype.getValue = function() {
-    var dir = this;
-
-    return _.inject(this._formatters, function(val, fn) {
-      return fn.apply(dir, [val]);
-    }, null);
+    return this.expression.value();
   };
 
   /**
@@ -598,8 +589,52 @@
 
   // ----------------------------------------------------------------------------
 
-  function Context(dir) {
-    this.directive = dir;
+  /**
+   * An expression.
+   *
+   *     var expr = new Expression("attr('name') -> val.toUpperCase()", dir);
+   *
+   *     // Actually does the binding to the 'name' attribute
+   *     expr.run();
+   *
+   *     // Returns the value of the name
+   *     expr.value();
+   */
+
+  function Expression(code, directive) {
+    this.code = code;
+    this.directive = directive;
+    this._formatters = [];
+  }
+
+  /**
+   * Returns the value of an expression.
+   */
+
+  Expression.prototype.value = function() {
+    var dir = this.directive;
+
+    return _.inject(this._formatters, function(val, fn) {
+      return fn.apply(dir, [val]);
+    }, null);
+  };
+
+  /**
+   * Runs the given expression.
+   */
+
+  Expression.prototype.run = function() {
+    var src = 'with(locals){with(helpers){ctx.' + this.code + ';}}';
+    var fn = new Function('ctx', '$el', 'helpers', 'locals', src);
+    var ctx = new ExpressionContext(this);
+    fn(ctx, this.directive.$el, LM.helpers, this.directive.template.localContext);
+  };
+
+  // ----------------------------------------------------------------------------
+
+  function ExpressionContext(expr) {
+    this.expression = expr;
+    this.directive = expr.directive;
   }
 
   /**
@@ -630,7 +665,7 @@
    *     }
    */
 
-  var Modifiers = Context.prototype;
+  var Modifiers = ExpressionContext.prototype;
   LM.modfiers = Modifiers;
 
   /**
@@ -691,7 +726,7 @@
     var model = dir.model;
     if (model) fn = $.proxy(fn, model);
 
-    dir._formatters.push(fn);
+    this.expression._formatters.push(fn);
     return this;
   };
 
