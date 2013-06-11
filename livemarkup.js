@@ -259,6 +259,7 @@
    *  - model        : model to be bound to (alias of [Template#model])
    *  - onrender     : Function to be called on rendering; often overriden in an action
    *  - ondestroy    : Function to be called on [Template#destroy()]
+   *  - value        : The attribute value string, raw and unevaluated
    *
    * Actions are ran in the context of an instance of this. Modifiers have
    * access to the directive using `this.directive`.
@@ -268,14 +269,11 @@
     this.$el = $(el);
     this.template = template;
     this.model = template.model;
-    this._formatters = [];
+    this.value = value;
     this._stopped = false;
 
+    // Run the action initialization
     getAction(action).apply(this, [param]);
-
-    // Run it
-    this.expression = new Expression(value, this);
-    this.expression.run();
   }
 
   /**
@@ -291,14 +289,11 @@
   };
 
   /**
-   * Returns the value of a given directive.
-   *
-   * Runs all the `_formatters` functions (as set by the modifiers) and returns
-   * the final value.
+   * Creates a new expression and runs its modifiers.
    */
 
-  Directive.prototype.getValue = function() {
-    return this.expression.value();
+  Directive.prototype.expr = function(str) {
+    return new Expression(str, this).run();
   };
 
   /**
@@ -331,7 +326,8 @@
     // obliterated anyway.
     this.stop();
 
-    this.onrender = function() { this.$el.text(this.getValue()); };
+    var expr = this.expr(this.value);
+    this.onrender = function() { this.$el.text(expr.value()); };
   };
 
   /**
@@ -341,8 +337,10 @@
    */
 
   Actions.at = function(name) {
+    var expr = this.expr(this.value);
+
     this.onrender = function() {
-      var val = this.getValue();
+      var val = expr.value();
       if (val === false) this.$el.removeAttr(name);
 
       else this.$el.attr(name, val);
@@ -357,9 +355,10 @@
 
   Actions.class = function(className) {
     className = className.replace(/[:\.]/g, ' ');
+    var expr = this.expr(this.value);
 
     this.onrender = function() {
-      var val = this.getValue();
+      var val = expr.value();
 
       this.$el.toggleClass(className, !!val);
     };
@@ -375,12 +374,14 @@
    */
 
   Actions.html = function() {
+    var expr = this.expr(this.value);
+
     // There's no need to parse out any directives inside it: they will be
     // obliterated anyway.
     this.stop();
 
     this.onrender = function() {
-      this.$el.html(this.getValue());
+      this.$el.html(expr.value());
     };
   };
 
@@ -394,13 +395,14 @@
     var dir = this;
     var template = this.template;
     var $el = dir.$el;
+    var expr = this.expr(this.value);
     var onchange;
 
     this.onrender = function() {
       // Get the value and transform it if need be.
       // (Array'ify it because $("select[multiple]").val() expects it, and so
       // does `recheck()`)
-      var val = toArray(dir.getValue());
+      var val = toArray(expr.value());
 
       // Set the value; uncheck the false and check the true.
       if ($el.is(radio + ',' + check))
@@ -436,6 +438,7 @@
 
     var dir = this;
     var template = dir.template;
+    var expr = this.expr(this.value);
 
     // Create a placeholder empty text code so we know where to ressurrent the
     // element later on.
@@ -449,7 +452,7 @@
     this.sub = null;
 
     this.onrender = function() {
-      if (this.getValue()) {
+      if (expr.value()) {
         $el = $blueprint.clone();
         $holder.after($el);
         if (!this.sub) {
@@ -478,7 +481,8 @@
    */
 
   Actions.run = function() {
-    this.onrender = function() { this.getValue(); };
+    var expr = this.expr(this.value);
+    this.onrender = function() { expr.value(); };
   };
 
   /**
@@ -492,6 +496,7 @@
     var parent = dir.template;
     var $list = dir.$el;
     var $item = $list.children().remove();
+    var expr = this.expr(this.value);
     var keyName;
 
     if ($item.length !== 1)
@@ -504,7 +509,7 @@
     }
 
     this.onrender = function() {
-      var list = this.getValue();
+      var list = expr.value();
 
       if (isCollection(list))
         eachCollection(list, $list, $item, name, keyName, parent, dir);
@@ -592,10 +597,15 @@
   /**
    * An expression.
    *
-   *     var expr = new Expression("attr('name') -> val.toUpperCase()", dir);
+   *     var str = "attr('name') -> val.toUpperCase()";
+   *
+   *     var expr = new Expression(str, dir);
    *
    *     // Actually does the binding to the 'name' attribute
    *     expr.run();
+   *
+   *     // Shortcut to new Expr().run():
+   *     var expr = dir.expr(str);
    *
    *     // Returns the value of the name
    *     expr.value();
@@ -628,6 +638,8 @@
     var fn = new Function('ctx', '$el', 'helpers', 'locals', src);
     var ctx = new ExpressionContext(this);
     fn(ctx, this.directive.$el, LM.helpers, this.directive.template.localContext);
+
+    return this;
   };
 
   // ----------------------------------------------------------------------------
