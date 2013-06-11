@@ -119,7 +119,7 @@ Loops are supported using `@each`.
 </ul>
 ~~~
 
-It even has explicit support for Backbone Collections which reacts to `add`,
+It even has explicit support for [Backbone collections] which reacts to `add`,
 `sort`, `delete` and `reset` events.
 
 ~~~ html
@@ -192,7 +192,7 @@ Directives
 ----------
 
 Every Livemarkup instruction is called a *directive*. A directive is comprised 
-of an *action* (left side, begins with `@`) and *modifiers* (right side).
+of an *action* (left side, begins with `@`) and its *expression* (right side).
 
 ~~~ html
 <div @text='attr("description")'>
@@ -202,9 +202,9 @@ of an *action* (left side, begins with `@`) and *modifiers* (right side).
 
 #### Actions
 
-Actions describe what will be done when a directive is rendered. It usually
-takes the *value* of the directive (as described by the *modifiers*) and
-performs something with it. Here are some common actions:
+Actions describe what will be done when a directive is ran. It usually
+takes the *value* of the expression and performs something with it. Here are 
+some common actions:
 
 ~~~ html
 <div @text='...'>
@@ -218,17 +218,31 @@ performs something with it. Here are some common actions:
 
 [More actions >]( #actions )
 
-#### Modifiers
+#### Expressions
 
-A modifier will either describe how a *value* for that directive can be derived,
-or applies a behavior to the directive. Modifiers can be chained.
+An expression describes how a value is derived for a directive.
+
+An expression is a JS expression that's runs *modifiers*. These modifiers will 
+either describe how a *value* for that directive can be derived, or applies a 
+behavior to the directive.
 
 ~~~ html
-<!-- Examples of .attr() and .format(): -->
+<!-- The `attr` modifier:
+     This expression tells @text that the value will
+     be derived from the model attribute `name`. -->
 <div @text='attr("name")'>
-<div @text='attr("name").format(function(val) { return val.toUpperCase(); })'>
+~~~
+
+Modifiers can be chained. The next modifier will transform the value of the 
+previous modifier.
+
+~~~ html
+<!-- The `format` modifier:
+     Calls the function `helperFunction` to transform the `name` attribute. -->
 <div @text='attr("name").format(helperFunction)'>
-<div @text='attr("name").format(helper1).format(helper2)'>
+
+<!-- It can take any function that returns something. -->
+<div @text='attr("name").format(function(val) { return val.toUpperCase(); })'>
 ~~~
 
 * `attr()` -- retrieves a value from a Backbone model, and listens for the
@@ -239,7 +253,8 @@ or applies a behavior to the directive. Modifiers can be chained.
 
 #### Formatter
 
-The `->` in the modifiers section is shorthand for `.format()`. These two directives are equivalent.
+The `->` is simply a shorthand for `.format()`. These two directives are 
+equivalent.
 
 ~~~ html
 <!-- These two are equivalent: -->
@@ -247,10 +262,22 @@ The `->` in the modifiers section is shorthand for `.format()`. These two direct
 <div @text='attr("name").format(val) { return val.toUpperCase(); }'>
 ~~~
 
+You can use the variable `val` to get the value given by the modifiers.
+
+~~~ html
+<div @text='attr("name") -> val.toUpperCase()'>
+~~~
+
 You can use `->` without any other modifiers, which allows you to execute arbitrary JavaScript.
 
 ~~~ html
 <div @text='-> Math.random()'>
+~~~
+
+The `this` in the context refers to the model bound to the template. (See [Template#bind()])
+
+~~~ html
+<div @text='-> this.getFullName()'>
 ~~~
 
 [Formatters >]( #formatters )
@@ -265,13 +292,136 @@ Actions
   * __@value__ - creates a two-way binding
   * __@at:name__ - sets an attribute
   * __@class:name__ - toggles a classname
-  * __@options__ - populates options for `<select>`
   * __@if__ - toggles the existence of an element
   * __@each__ - iterates through an array/collection
+  * __@options__ - populates options for `<select>`
 
 ### @text
 
-Sets text.
+Sets the text the given element using [$.fn.text].
+
+~~~ html
+<!-- Sets text based on the 'name' model attribute. -->
+<div @text='attr("name")'>
+~~~
+
+Like all other actions, you can make it run any arbitrary JavaScript by using
+[->].
+
+~~~ html
+<div @text='-> getDescriptionText()'>
+~~~
+
+Like all other actions, you can also transform using helpers with [->].
+
+~~~ html
+<div @text='attr("account_balance") -> formatMoney(val)'>
+~~~
+### @html
+
+Sets the inner HTML of a given element using [$.fn.html]. Works exactly like 
+[@text].
+
+~~~ html
+<div @html='attr("description")'>
+~~~
+
+### @value
+
+Sets the value of the element using [$.fn.val]. Used on form elements 
+(`textarea`, `input` and `select`).
+
+~~~ html
+<textarea @value='attr("description")'>
+<input type='text' @value='attr("description")'>
+~~~
+
+When used in conjunction with the [attr] modifier, it creates a two-way binding
+that listens to the element's `change` event and sets the model attribute.
+Two-way bindings work with any form element.
+
+It also works with multiple selections. In this case, ensure that the value is 
+an array of items to be selected.
+
+~~~ html
+<select multiple name='fruit' @value='-> ["apple", "orange"]'>
+  <option value='apple'>Apple</option>
+  <option value='banana'>Banana</option>
+  <option value='orange'>Orange</option>
+</select>
+~~~
+
+When working with checkboxes, you have to put the directive in all the 
+checkboxes. The value must also be an array just as above.
+
+~~~ html
+<input type='checkbox' name='fruit' value='apple'  @value='-> ["apple", "orange"]'>
+<input type='checkbox' name='fruit' value='banana' @value='-> ["apple", "orange"]'>
+<input type='checkbox' name='fruit' value='orange' @value='-> ["apple", "orange"]'>
+~~~
+
+When working with radio buttons, put the directive in all elements as well.
+
+~~~ html
+<input type='radio' name='fruit' value='apple'  @value='-> "orange"'>
+<input type='radio' name='fruit' value='banana' @value='-> "orange"'>
+<input type='radio' name='fruit' value='orange' @value='-> "orange"'>
+~~~
+
+### @at:name
+
+Sets an attribute `name` in the element.
+
+~~~ html
+<img @at:title="attr('image_title')">
+<img @at:title="attr('image_title') -> 'Caption: ' + val">
+
+<img @at:src="attr('image_url')">
+~~~
+
+### @class:name
+
+Sets a class `name` to the element if the value is `true`, and removes it if
+`false`. This allows you to create bindings to give a class to an element based
+on a value that may change.
+
+~~~ html
+<div @class:active='attr("is_active")'>
+~~~
+
+### @if
+
+Makes the element present if the value is `true`, and removes it if `false`.
+
+~~~ html
+<div @if='attr("admin")'>
+  This user is an admin.
+</div>
+~~~
+
+### @each
+
+Iterates through each of a given item. It takes the child of the element and
+repeats it as needed.
+
+~~~ html
+<ul @each='user in -> ["Tom", "Dick", "Harry"]'>
+  <li>
+    Name: <strong @text="-> user"></strong>
+  </li>
+</ul>
+~~~
+
+When used with [Backbone collections], it reacts to `add`, `sort`, `delete` and
+`reset` events, making the list respond to the collection as it is being modified.
+
+~~~ html
+<ul @each='item in -> this.reminders'>
+  <li>
+    Reminder: <strong @text="attr(user, 'text')"></strong>
+  </li>
+</ul>
+~~~
 
 Modifiers
 ---------
@@ -406,3 +556,10 @@ from its [contributors]. It is sponsored by my startup, [Nadarei, Inc.]
 [jQuery]: http://jquery.com
 [Backbone.js]: http://backbonejs.org
 [development notes]: https://raw.github.com/rstacruz/livemarkup/master/Notes.md
+[$.fn.text]: http://api.jquery.com/text
+[$.fn.html]: http://api.jquery.com/html
+
+[->]: #formatter
+[@text]: #text
+[Template#bind()]: #template-bind
+[Backbone collections]: http://backbonejs.org/#collections
