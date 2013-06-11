@@ -29,6 +29,18 @@ lets you write your client-side templates using plain HTML. This example uses
 <span @text='-> parseInt(Math.random()*6)'>
 ~~~
 
+#### Alternate syntaxes
+
+Livemarkup allows you to use four different prefixes if you prefer to be 
+HTML-valid. The most convenient `@` syntax is preferred.
+
+~~~ html
+<span @text='-> attr("first_name")'>
+<span lm:text='-> attr("first_name")'>
+<span lm-text='-> attr("first_name")'>
+<span data-lm-text='-> attr("first_name")'>
+~~~
+
 #### Model-to-DOM binding
 Livemarkup is built to be reactive -- it also allows you to bind to Backbone
 model attributes using [attr()](#attr). The DOM updates in real time (because
