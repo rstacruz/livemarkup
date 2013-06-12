@@ -99,7 +99,7 @@ testSuite('@each() collections', function() {
 
   // ----
 
-  describe.only('events', function() {
+  describe('events', function() {
     beforeEach(function() {
       users = new Users();
 

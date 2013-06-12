@@ -31,4 +31,12 @@ testSuite('destroy', function() {
     user.set('name', 'Demi');
     assert.equal($('#name').html(), 'Kesha');
   });
+
+  it('should emit event', function(done) {
+    $('#box').bind('lm:destroy', function() {
+      done();
+    });
+
+    tpl.destroy();
+  });
 });

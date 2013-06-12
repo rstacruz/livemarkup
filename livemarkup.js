@@ -176,8 +176,8 @@
    */
 
   Template.prototype.initialize = function() {
-    // Ensure that `destroy` events don't recurse back up to parent templates.
-    this.on('destroy', function(e) { e.stopPropagation(); });
+    // Ensure that `lm:destroy` events don't recurse back up to parent templates.
+    this.on('lm:destroy', function(e) { e.stopPropagation(); });
 
     this.directives = Template.fetchDirectives(this.$el, this);
 
@@ -217,7 +217,7 @@
    */
 
   Template.prototype.destroy = function() {
-    this.trigger('destroy');
+    this.trigger('lm:destroy');
     return this;
   };
 
@@ -439,7 +439,7 @@
       }
     };
 
-    template.on('destroy', function() {
+    template.on('lm:destroy', function() {
       if (dir.bound) $el[off]('change', onchange);
     });
   };
@@ -489,7 +489,7 @@
     };
 
     // Propagate destruction.
-    template.on('destroy', function() { dir.sub.destroy(); });
+    template.on('lm:destroy', function() { dir.sub.destroy(); });
   };
 
   /**
@@ -515,7 +515,7 @@
 
     // Bind the event
     $el[on](event, fn);
-    tpl.on('destroy', function() { $el[off](event, fn); });
+    tpl.on('lm:destroy', function() { $el[off](event, fn); });
   };
 
   /**
@@ -639,7 +639,7 @@
       $list.append(tpl.$el);
 
       // Make sure that the subtemplate will clean up.
-      parent.on('destroy', function() { tpl.destroy(); });
+      parent.on('lm:destroy', function() { tpl.destroy(); });
     });
   }
 
@@ -931,10 +931,10 @@
   function listenVia(view, template, model, event, callback) {
     if (view && view.listenTo) {
       view.listenTo(model, event, callback);
-      template.on('destroy', function() { view.stopListening(model, event, callback); });
+      template.on('lm:destroy', function() { view.stopListening(model, event, callback); });
     } else {
       model.on(event, callback);
-      template.on('destroy', function() { model.off(event, callback); });
+      template.on('lm:destroy', function() { model.off(event, callback); });
     }
   }
 
