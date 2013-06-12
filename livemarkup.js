@@ -906,6 +906,7 @@
    */
 
   function toArray(value) {
+    if (typeof value === 'undefined') return [];
     return _.isArray(value) ? value : [value];
   }
 

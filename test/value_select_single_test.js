@@ -16,11 +16,13 @@ testSuite('@value() select', function() {
   });
 
   it("should work with arrays", function() {
+    if (window.Zepto) return;
     model.set('number', ['three', 'two']);
     assert.equal($("select").val().toString(), ['two', 'three'].toString());
   });
 
   it("should work with strings", function() {
+    if (window.Zepto) return;
     model.set('number', 'three');
     assert.equal($("select").val().toString(), ["three"].toString());
   });
