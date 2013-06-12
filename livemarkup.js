@@ -552,7 +552,7 @@
 
     function add(model) {
       var tpl = append(model);
-      tpl.$el.trigger('append');
+      tpl.$el.trigger('lm:append');
     }
 
     function remove(model) {
@@ -560,17 +560,22 @@
       if (!tpl) return;
 
       tpl.destroy();
-      var prevented = triggerAndCheck(tpl.$el, 'remove');
+      var prevented = triggerAndCheck(tpl.$el, 'lm:remove');
       if (!prevented) tpl.$el.remove();
     }
 
     function reset(models) {
-      _.each(subs, function(tpl) { tpl.destroy(); tpl.$el.remove(); });
+      _.each(subs, function(tpl) {
+        tpl.destroy();
+        var prevented = triggerAndCheck(tpl.$el, 'lm:remove-reset');
+        if (!prevented) tpl.$el.remove();
+      });
+
       models.each(function(model) {
         var tpl = append(model);
-        tpl.$el.trigger('append:reset');
+        tpl.$el.trigger('lm:append-reset');
       });
-      parent.trigger('reset');
+      parent.trigger('lm:reset');
     }
 
     // Sort by re-appending them one-by-one.

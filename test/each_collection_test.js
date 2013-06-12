@@ -99,7 +99,7 @@ testSuite('@each() collections', function() {
 
   // ----
 
-  describe('events', function() {
+  describe.only('events', function() {
     beforeEach(function() {
       users = new Users();
 
@@ -111,17 +111,25 @@ testSuite('@each() collections', function() {
     });
 
     it('append event', function(done) {
-      tpl.on('append', function() { done(); });
+      tpl.on('lm:append', function() { done(); });
       users.add({ name: 'Jacob' });
     });
 
     it('UL reset event', function(done) {
-      tpl.on('reset', function() { done(); });
+      tpl.on('lm:reset', function() { done(); });
+      users.reset([{ name: 'John' }, { name: 'Jacob' }]);
+    });
+
+    it('UL remove-reset event', function(done) {
+      var times = 0;
+      tpl.on('lm:remove-reset', function() { if (++times === 2) done(); });
+      users.reset([{ name: 'John' }, { name: 'Jacob' }]);
       users.reset([{ name: 'John' }, { name: 'Jacob' }]);
     });
     
+    
     it('LI append:reset event', function(done) {
-      tpl.on('append:reset', _.once(function() { done(); }));
+      tpl.on('lm:append-reset', _.once(function() { done(); }));
       users.reset([{ name: 'John' }, { name: 'Jacob' }]);
     });
 
@@ -130,7 +138,7 @@ testSuite('@each() collections', function() {
 
       users.reset([{ name: 'John' }]);
 
-      tpl.$el.on('remove', 'li', function(e) {
+      tpl.$el.on('lm:remove', 'li', function(e) {
         e.preventDefault();
         setTimeout(checkLi, 50);
       });
