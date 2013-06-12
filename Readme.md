@@ -334,7 +334,8 @@ the model attribute when the value is changed.
 ~~~
 
 It also works with multiple selections (`<select multiple>`). In this case,
-ensure that the value is an array of items to be selected.
+ensure that the value is an array of items to be selected. (Note: this is not
+supported under Zepto, see [Zepto #501].)
 
 ~~~ html
 <select multiple name='fruit' @value='-> ["apple", "orange"]'>
@@ -615,6 +616,7 @@ from its [contributors]. It is sponsored by my startup, [Nadarei, Inc.]
 [$.fn.text]: http://api.jquery.com/text
 [$.fn.html]: http://api.jquery.com/html
 [$.fn.val]: http://api.jquery.com/val
+[Zepto #501]: https://github.com/madrobby/zepto/issues/501
 
 [->]: #formatter
 [@text]: #text
