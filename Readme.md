@@ -342,8 +342,8 @@ the model attribute when the value is changed.
 <input type='text' @value='attr("description")'>
 ~~~
 
-It also works with multiple selections. In this case, ensure that the value is 
-an array of items to be selected.
+It also works with multiple selections (`<select multiple>`). In this case,
+ensure that the value is an array of items to be selected.
 
 ~~~ html
 <select multiple name='fruit' @value='-> ["apple", "orange"]'>
@@ -423,6 +423,39 @@ When used with [Backbone collections], it reacts to `add`, `sort`, `delete` and
     Reminder: <strong @text="attr(user, 'text')"></strong>
   </li>
 </ul>
+~~~
+
+It also fires the following events, which can be caught to add entrance/exit animations:
+
+ * `lm:remove` (when an element is to be removed)
+ * `lm:remove-reset` (when an element is to be removed for a reset)
+ * `lm:append` (when an element is to be added)
+ * `lm:append-reset` (when an element is to be added for a reset)
+
+### @run
+
+Runs some JavaScript. This is often used with the [on()] modifier to execute
+something when an event is triggered.
+
+~~~ html
+<div @run='on("sync") -> $($el).yellowFade();'>
+<div @run='on(collection, "add remove reset") -> $($el).isotope();'>
+~~~
+
+It can also be used to run custom view code when an attribute changes. This
+allows to to create custom ways to toggle a thing, for instance.
+
+~~~ html
+<div @run='attr("name") -> view.togglePanel(val, $el);'>
+~~~
+
+### @on:event
+
+Binds an event to the element. In Backbone, this is not recommended (because
+views already have a facility for this).
+
+~~~ html
+<div @on:click='view.showPanel()'>
 ~~~
 
 Modifiers
@@ -567,3 +600,4 @@ from its [contributors]. It is sponsored by my startup, [Nadarei, Inc.]
 [Template#bind()]: #template-bind
 [Backbone collections]: http://backbonejs.org/#collections
 [attr()]: #attr
+[on()]: #on

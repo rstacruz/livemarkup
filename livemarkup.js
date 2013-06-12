@@ -493,6 +493,24 @@
   };
 
   /**
+   * Binds an event handler
+   */
+
+  Actions.on = function(event) {
+    var dir = this;
+    var $el = dir.$el;
+    var tpl = dir.template;
+
+    // Create a function closure that adds the local context into it
+    var gen = new Function('ctx', 'with(ctx){return function(e){'+ this.value + '};}');
+    var fn = gen(tpl.localContext);
+
+    // Bind the event
+    $el[on](event, fn);
+    tpl.on('destroy', function() { $el[off](event, fn); });
+  };
+
+  /**
    * Runner.
    * (Does nothing really, since the formatter will run it anyway)
    */
