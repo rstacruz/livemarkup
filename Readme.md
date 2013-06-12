@@ -515,9 +515,37 @@ API
 
 Creates a template object.
 
-### Template#bind()
+~~~ js
+LM($("#box"))    /* with a jQuery object */
+LM(view)         /* with a Backbone view */
+~~~
 
-To be written.
+### .bind()
+
+Binds to a model.
+
+~~~ js
+.bind(model)
+~~~
+
+### .render()
+
+Renders a template.
+
+~~~ js
+.render()
+~~~
+
+### .destroy()
+
+Destroys a template.
+
+~~~ js
+.destroy()
+~~~
+
+Note that this triggers a `lm:destroy` event in the DOM, which you can catch if
+you need to create special behavior.
 
 Integration
 ===========
