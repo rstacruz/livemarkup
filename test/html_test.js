@@ -1,9 +1,7 @@
 var Setup = require('./setup');
 
-describe('html()', function() {
+testSuite('html()', function() {
   var tpl, $parent, model, outerFn, innerFn;
-
-  beforeEach(Setup.env);
 
   beforeEach(function() {
     outerFn = sinon.stub().returns("One");
@@ -11,14 +9,10 @@ describe('html()', function() {
   });
 
   beforeEach(function() {
-    $parent = $("<div>")
-      .html(
-        "<span id='message' @html='-> outerFn()'>" +
-          "<span id='inside' @html='-> innerFn()'></span>" +
-        "</span>")
-      .appendTo("body");
-
-    tpl = new LM.template($parent)
+    template(
+      "<span id='message' @html='-> outerFn()'>" +
+        "<span id='inside' @html='-> innerFn()'></span>" +
+      "</span>")
       .locals({ outerFn: outerFn, innerFn: innerFn })
       .render();
   });

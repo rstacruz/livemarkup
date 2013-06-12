@@ -1,9 +1,11 @@
 var Setup = require('./setup');
 
-describe('@value()', function() {
-  var tpl, $parent, model;
+testSuite('@value()', function() {
+  var tpl, model;
 
-  beforeEach(Setup.env);
+  beforeEach(function() {
+    model = new Backbone.Model({ name: "John" });
+  });
 
   it('should work', function() {
     render("<input id='textbox' type='text' @value='attr(\"name\")'>");
@@ -33,12 +35,7 @@ describe('@value()', function() {
     assert.equal(model.get('name'), 'John');
   });
 
-  beforeEach(function() {
-    model = new Backbone.Model({ name: "John" });
-  });
-
   function render(str) {
-    $parent = $("<p>").appendTo("body").html(str);
-    tpl = new LM($parent).bind(model).render();
+    tpl = new template(str).bind(model).render();
   }
 });

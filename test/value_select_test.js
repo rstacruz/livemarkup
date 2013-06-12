@@ -1,18 +1,18 @@
 var Setup = require('./setup');
 
-describe('@value() select', function() {
-  var tpl, $parent, model;
-
-  beforeEach(Setup.env);
+testSuite('@value() select', function() {
+  var model;
 
   beforeEach(function() {
-    render(
+    model = new Backbone.Model();
+    template(
       "<select name='number' @value='attr(\"number\")'>" +
         "<option value='one'>Uno</option>" +
         "<option value='two'>Dos</option>" +
         "<option value='three'>Tres</option>" +
-      "</select>"
-    );
+      "</select>")
+      .bind(model)
+      .render();
   });
 
   it("should default to nothing", function() {
@@ -38,12 +38,4 @@ describe('@value() select', function() {
     assert.equal(model.get('number'), 'three');
     assert(model.set.calledOnce);
   });
-
-  // ---
-
-  function render(str) {
-    model = new Backbone.Model();
-    $parent = $("<p>").appendTo("body").html(str);
-    tpl = new LM($parent).bind(model).render();
-  }
 });

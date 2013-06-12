@@ -15,9 +15,6 @@ global.testSuite = testSuite;
 global.html = html;
 global.template = template;
 
-// Setup exports
-module.exports = { env: customEnv({ jquery: 'jquery-1.9.1' }) };
-
 /**
  * Returns a file's contents -- getFile('test/vendor/x.js')
  */
