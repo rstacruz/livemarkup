@@ -500,10 +500,18 @@
     var dir = this;
     var $el = dir.$el;
     var tpl = dir.template;
+    var src = this.value;
+    var fn;
 
-    // Create a function closure that adds the local context into it
-    var gen = new Function('ctx', 'with(ctx){return function(e){'+ this.value + '};}');
-    var fn = gen(tpl.localContext);
+    if (tpl.view && tpl.view[src]) {
+      // Work with Backbone view methods
+      fn = tpl.view[src];
+    }
+    else {
+      // Create a function closure that adds the local context into it
+      var gen = new Function('ctx', 'with(ctx){return function(e){'+ src + '};}');
+      fn = gen(tpl.localContext);
+    }
 
     // Bind the event
     $el[on](event, fn);

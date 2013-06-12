@@ -451,11 +451,18 @@ allows to to create custom ways to toggle a thing, for instance.
 
 ### @on:event
 
-Binds an event to the element. In Backbone, this is not recommended (because
-views already have a facility for this).
+Binds an event to the element.
 
 ~~~ html
 <div @on:click='view.showPanel()'>
+~~~
+
+This is not usually recommended for use with Backbone (because Backbone views
+already have a facility for this), but is here for posterity. Nevertheless, you
+can also provide a method name in the view to bind that event to that view method.
+
+~~~ html
+<div @on:click='showPanel'>
 ~~~
 
 Modifiers
