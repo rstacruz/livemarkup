@@ -18,7 +18,10 @@ testSuite('@value() select', function() {
   it("should default to nothing", function() {
     model.set('number', 'two');
     model.set('number', null);
-    assert.equal($("select").val(), 'one');
+    if (window.Zepto)
+      assert.equal($("select").val(), 'two');
+    else
+      assert.equal($("select").val(), 'one');
   });
 
   it("should respond", function() {
