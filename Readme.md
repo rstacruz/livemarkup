@@ -227,9 +227,9 @@ either describe how a *value* for that directive can be derived, or applies a
 behavior to the directive.
 
 ~~~ html
-<!-- The `attr` modifier:
-     This expression tells @text that the value will
-     be derived from the model attribute `name`. -->
+<!-- The `attr` modifier: -->
+<!-- This expression tells @text that the value will -->
+<!-- be derived from the model attribute `name`. -->
 <div @text='attr("name")'>
 ~~~
 
@@ -237,8 +237,8 @@ Modifiers can be chained. The next modifier will transform the value of the
 previous modifier.
 
 ~~~ html
-<!-- The `format` modifier:
-     Calls the function `helperFunction` to transform the `name` attribute. -->
+<!-- The `format` modifier: -->
+<!-- Calls the function `helperFunction` to transform the `name` attribute. -->
 <div @text='attr("name").format(helperFunction)'>
 
 <!-- It can take any function that returns something. -->
@@ -265,6 +265,7 @@ equivalent.
 You can use the variable `val` to get the value given by the modifiers.
 
 ~~~ html
+<!-- Runs the `name` model attribute to .toUpperCase(). -->
 <div @text='attr("name") -> val.toUpperCase()'>
 ~~~
 
@@ -309,18 +310,21 @@ Like all other actions, you can make it run any arbitrary JavaScript by using
 [->].
 
 ~~~ html
+<!-- Sets <div> text to the return value of getDescriptionText(). -->
 <div @text='-> getDescriptionText()'>
 ~~~
 
 Like all other actions, you can also transform using helpers with [->].
 
 ~~~ html
+<!-- Takes the `account_balance` model attribute, -->
+<!-- and runs it through a formatMoney() helper. -->
 <div @text='attr("account_balance") -> formatMoney(val)'>
 ~~~
 ### @html
 
-Sets the inner HTML of a given element using [$.fn.html]. Works exactly like 
-[@text].
+Sets the inner HTML of a given element using [$.fn.html]. Everything else works
+exactly like [@text].
 
 ~~~ html
 <div @html='attr("description")'>
@@ -328,17 +332,15 @@ Sets the inner HTML of a given element using [$.fn.html]. Works exactly like
 
 ### @value
 
-Sets the value of the element using [$.fn.val]. Used on form elements 
-(`textarea`, `input` and `select`).
+Sets the value of the element using [$.fn.val]. It's used on form elements
+(`textarea`, `input` and `select`).  When used with the [attr()] modifier, it
+makes a two-way binding that listens to the element's `change` event and sets
+the model attribute when the value is changed.
 
 ~~~ html
 <textarea @value='attr("description")'>
 <input type='text' @value='attr("description")'>
 ~~~
-
-When used in conjunction with the [attr] modifier, it creates a two-way binding
-that listens to the element's `change` event and sets the model attribute.
-Two-way bindings work with any form element.
 
 It also works with multiple selections. In this case, ensure that the value is 
 an array of items to be selected.
@@ -558,8 +560,10 @@ from its [contributors]. It is sponsored by my startup, [Nadarei, Inc.]
 [development notes]: https://raw.github.com/rstacruz/livemarkup/master/Notes.md
 [$.fn.text]: http://api.jquery.com/text
 [$.fn.html]: http://api.jquery.com/html
+[$.fn.val]: http://api.jquery.com/val
 
 [->]: #formatter
 [@text]: #text
 [Template#bind()]: #template-bind
 [Backbone collections]: http://backbonejs.org/#collections
+[attr()]: #attr
