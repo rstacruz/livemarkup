@@ -419,13 +419,16 @@
       // Get the value and transform it if need be.
       // (Array'ify it because $("select[multiple]").val() expects it, and so
       // does `recheck()`)
-      var val = toArray(expr.value());
+      var val = expr.value();
 
       // Set the value; uncheck the false and check the true.
       if ($el.is(radio + ',' + check))
-        recheck($el, val);
+        recheck($el, toArray(val));
 
       // Account for <select multiple>
+      else if ($el.is(multiple))
+        $el.val(toArray(val));
+
       else
         $el.val(val);
 
