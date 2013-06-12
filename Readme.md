@@ -35,10 +35,10 @@ Livemarkup allows you to use four different prefixes if you prefer to be
 HTML-valid. The most convenient `@` syntax is preferred.
 
 ~~~ html
-<span @text='-> attr("first_name")'>
-<span lm:text='-> attr("first_name")'>
-<span lm-text='-> attr("first_name")'>
-<span data-lm-text='-> attr("first_name")'>
+<span @text='attr("first_name")'>
+<span lm:text='attr("first_name")'>
+<span lm-text='attr("first_name")'>
+<span data-lm-text='attr("first_name")'>
 ~~~
 
 #### Model-to-DOM binding
@@ -200,7 +200,7 @@ of an *action* (left side, begins with `@`) and its *expression* (right side).
 <input @value='attr("title")'>
 ~~~
 
-#### Actions
+### About actions
 
 Actions describe what will be done when a directive is ran. It usually
 takes the *value* of the expression and performs something with it. Here are 
@@ -218,7 +218,7 @@ some common actions:
 
 [More actions >]( #actions )
 
-#### Expressions
+### Expressions
 
 An expression describes how a value is derived for a directive.
 
@@ -251,7 +251,7 @@ previous modifier.
 
 [Modifiers >]( #modifiers )
 
-#### Formatter
+### Formatter
 
 The `->` is simply a shorthand for `.format()`. These two directives are 
 equivalent.
@@ -287,15 +287,6 @@ The `this` in the context refers to the model bound to the template. (See [Templ
 
 Actions
 -------
-
-  * __@text__ - sets the text
-  * __@html__ - sets inner html
-  * __@value__ - creates a two-way binding
-  * __@at:name__ - sets an attribute
-  * __@class:name__ - toggles a classname
-  * __@if__ - toggles the existence of an element
-  * __@each__ - iterates through an array/collection
-  * __@options__ - populates options for `<select>`
 
 ### @text
 
@@ -467,11 +458,6 @@ can also provide a method name in the view to bind that event to that view metho
 
 Modifiers
 ---------
-
- * __attr[model,] name)__ - retrieves the given attribute, and auto-updates the
- directive when attribute is changed
- * __on([model,] event)__ - refreshes the directive when the given event is ran
- * __format(fn)__ - formats the value with the given helper function
 
 ### attr()
 
