@@ -12,7 +12,7 @@ testSuite('syntaxes', function() {
       it("prefix with name", function() {
         template("<img "+prefix+"at:title='-> \"hello\"'></div>").render();
 
-        assert.equal($('#body').html(), '<img title="hello" />');
+        assert.htmlEqual($('#body').html(), '<img title="hello" />');
       });
     });
   });

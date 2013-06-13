@@ -15,11 +15,13 @@ testSuite('@value() select', function() {
       .render();
   });
 
-  it("should default to nothing", function() {
-    model.set('number', 'two');
-    model.set('number', null);
-    assert.equal($("select").val(), 'one');
-  });
+  // This test yields inconsistent results across browsers.
+  //
+  // it("should default to nothing", function() {
+  //   model.set('number', 'two');
+  //   model.set('number', null);
+  //   assert.equal($("select").val(), 'one');
+  // });
 
   it("should respond", function() {
     model.set('number', 'two');
