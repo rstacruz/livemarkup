@@ -1,4 +1,4 @@
-var Setup = require('./setup');
+require('./setup');
 
 testSuite('backbone view test', function() {
   var tpl, $parent, model, view;
@@ -41,7 +41,7 @@ testSuite('backbone view test', function() {
   });
 
   function render(str) {
-    $parent = $("<p>").appendTo("body").html(str);
+    $parent = $("<p>").appendTo("#body").html(str);
     view = new Backbone.View({ el: $parent });
     tpl = new LM(view).bind(model).render();
   }

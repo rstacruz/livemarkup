@@ -1,17 +1,59 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title></title>
-  <!-- <script src='vendor/jquery-1.9.1.js'></script> -->
-  <!-- <script src='vendor/zepto-1.0.js'></script> -->
-  <!-- <script src='vendor/jquery-1.10.1.js'></script> -->
-  <script src='vendor/jquery-1.5.2.js'></script>
+  <meta charset="utf-8">
+  <meta name='viewport' content='width=device-width,initial-scale=1.0'>
+  <title>Tests</title>
+  <link rel='stylesheet' href='vendor/mocha.css'>
+
+  <!-- mocha -->
+  <script src='vendor/jquery-1.10.js'></script>
+  <script src='vendor/mocha.js'></script>
+  <script>mocha.ignoreLeaks(); mocha.setup('bdd');</script>
+  <script src='vendor/sinon.js'></script>
+  <script src='vendor/chai.js'></script>
+  <script>should = chai.should(); assert = chai.assert;</script>
+
+  <!-- deps -->
   <script src='vendor/underscore-1.4.4.js'></script>
   <script src='vendor/backbone-1.0.0.js'></script>
+
+  <!-- it's me -->
   <script src='../livemarkup.js'></script>
+
+  <!-- tests -->
+  <script src="support/browser.js"></script>  
+  <script src="support/helpers.js"></script>  
+  <script src="at_test.js"></script>  
+  <script src="attr_test.js"></script>
+  <script src="backbone_view_test.js"></script>
+  <script src="basic_test.js"></script>
+  <script src="class_test.js"></script>
+  <script src="destroy_test.js"></script>
+  <script src="directive_test.js"></script>
+  <script src="each_collection_test.js"></script>
+  <script src="each_test.js"></script>
+  <script src="event_test.js"></script>
+  <script src="html_test.js"></script>
+  <script src="if_switch_test.js"></script>
+  <script src="if_test.js"></script>
+  <script src="index.html"></script>
+  <script src="initialize_count_test.js"></script>
+  <script src="locals_test.js"></script>
+  <script src="on_test.js"></script>
+  <script src="render_test.js"></script>
+  <script src="run_test.js"></script>
+  <script src="setup.js"></script>
+  <script src="syntax_test.js"></script>
+  <script src="tag_test.js"></script>
+  <script src="value_radio_test.js"></script>
+  <script src="value_select_single_test.js"></script>
+  <script src="value_select_test.js"></script>
+  <script src="value_test.js"></script>
+  <script>onload = function() { mocha.run(); }</script>
 </head>
 <body>
-  
+  <div id="mocha"></div>
+  <div id="body"></div>
 </body>
 </html>

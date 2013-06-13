@@ -19,7 +19,7 @@ testSuite('@run()', function() {
   });
 
   it('correct html', function() {
-    assert.equal('<div id="box" class="active"></div>', $("body").html());
+    assert.equal('<div id="box" class="active"></div>', $("#body").html());
   });
 
   it('called once first', function() {

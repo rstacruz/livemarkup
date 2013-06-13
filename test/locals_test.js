@@ -5,7 +5,7 @@ testSuite('locals', function() {
 
   beforeEach(function() {
     $parent = $("<p class='paragraph'>")
-      .appendTo("body")
+      .appendTo("#body")
       .html('<span id="message" @text="-> hello()"></span>');
   });
 

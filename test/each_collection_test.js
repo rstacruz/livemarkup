@@ -1,5 +1,4 @@
-
-var Setup = require('./setup');
+require('./setup');
 
 testSuite('@each() collections', function() {
   var User, Users, users, tpl;
@@ -21,7 +20,7 @@ testSuite('@each() collections', function() {
     ).locals({ users: users, four: 4 }).render();
     users.add({});
 
-    assert.equal($('body').text(), '4');
+    assert.equal($('#body').text(), '4');
   });
 
   describe('from empty', function() {
@@ -38,14 +37,14 @@ testSuite('@each() collections', function() {
       users.add({ name: 'Jacob' });
 
       var expected = '<ul><li><b>John</b></li><li><b>Jacob</b></li></ul>';
-      assert.equal($('body').html(), expected);
+      assert.equal($('#body').html(), expected);
     });
 
     it('collection.reset (fresh)', function() {
       users.reset([{ name: 'John' }, { name: 'Jacob' }]);
 
       var expected = '<ul><li><b>John</b></li><li><b>Jacob</b></li></ul>';
-      assert.equal($('body').html(), expected);
+      assert.equal($('#body').html(), expected);
     });
 
     it('collection.reset (not fresh)', function() {
@@ -53,7 +52,7 @@ testSuite('@each() collections', function() {
       users.reset([{ name: 'John' }, { name: 'Jacob' }]);
 
       var expected = '<ul><li><b>John</b></li><li><b>Jacob</b></li></ul>';
-      assert.equal($('body').html(), expected);
+      assert.equal($('#body').html(), expected);
     });
     
     it('collection.remove', function() {
@@ -61,14 +60,14 @@ testSuite('@each() collections', function() {
       users.remove(users.at(0));
 
       expected = '<ul><li><b>Jacob</b></li></ul>';
-      assert.equal($('body').html(), expected);
+      assert.equal($('#body').html(), expected);
     });
 
     it('model.destroy', function() {
       users.reset([{ name: 'Abel' }]);
       users.at(0).destroy();
 
-      assert.equal($('body').html(), '<ul></ul>');
+      assert.equal($('#body').html(), '<ul></ul>');
     });
     
     it('collection.sort', function() {
@@ -76,7 +75,7 @@ testSuite('@each() collections', function() {
       users.comparator = function(model) { return model.get('name'); };
       users.sort();
 
-      assert.equal($('body').text(), 'abc');
+      assert.equal($('#body').text(), 'abc');
     });
   });
 
@@ -93,7 +92,7 @@ testSuite('@each() collections', function() {
       ).locals({ users: users }).render();
 
       var expected = '<ul><li><b>John</b></li><li><b>Jacob</b></li></ul>';
-      assert.equal($('body').html(), expected);
+      assert.equal($('#body').html(), expected);
     });
   });
 
@@ -146,7 +145,7 @@ testSuite('@each() collections', function() {
       users.remove(users.at(0));
 
       function checkLi() {
-        assert.equal($('body').html(), '<ul><li><b>John</b></li></ul>');
+        assert.equal($('#body').html(), '<ul><li><b>John</b></li></ul>');
         done();
       }
     });

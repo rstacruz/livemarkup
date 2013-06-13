@@ -1,5 +1,4 @@
-
-var Setup = require('./setup');
+require('./setup');
 
 testSuite('@each() arrays', function() {
   var users;
@@ -82,7 +81,7 @@ testSuite('@each() arrays', function() {
       '<ul><li>male</li><li>female</li></ul></li>' +
       '<li><strong>Status</strong><ul><li>single</li><li>married</li></ul></li></ul>' ;
 
-      assert.equal($('body').html(), expected);
+      assert.equal($('#body').html(), expected);
     });
   });
 

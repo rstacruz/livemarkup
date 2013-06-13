@@ -27,7 +27,7 @@ testSuite('on() modifier', function() {
     });
 
     var view = new View().render();
-    view.$el.appendTo('body');
+    view.$el.appendTo('#body');
 
     $('#box').trigger('click');
     $('#box').trigger('click');

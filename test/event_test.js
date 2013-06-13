@@ -1,4 +1,4 @@
-var Setup = require('./setup');
+require('./setup');
 
 testSuite('events', function() {
   var tpl, model, $parent;
@@ -28,7 +28,7 @@ testSuite('events', function() {
 
   function setParent() {
     $parent = $("<p class='paragraph'>")
-      .appendTo("body")
+      .appendTo("#body")
       .html([
         '<span id="message" @text="on(\'eventname\') -> \'hello \' + Math.random()">',
         "</span>"

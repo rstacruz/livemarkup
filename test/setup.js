@@ -12,8 +12,8 @@ var sourceCache = cache();
 global.inspect = inspect;
 global.getFile = getFile;
 global.testSuite = testSuite;
-global.html = html;
-global.template = template;
+
+require('./support/helpers');
 
 /**
  * Returns a file's contents -- getFile('test/vendor/x.js')
@@ -73,7 +73,7 @@ function customEnv(src) {
 
   return function(done) {
     jsdom.env({
-      html: '<!doctype html><html><head></head><body></body></html>',
+      html: '<!doctype html><html><head></head><body><div id="body"></div></body></html>',
       src: sources,
       done: function(errors, window) {
         window.console = console;
@@ -103,19 +103,3 @@ function cache() {
   };
 }
 
-/**
- * Render HTML
- */
-
-function html(str) {
-  return $(str.replace(/`/g, "'")).appendTo('body');
-}
-
-/**
- * Render template
- */
-
-function template(str) {
-  var $parent = html(str);
-  return LM($parent);
-}

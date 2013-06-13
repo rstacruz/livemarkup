@@ -1,4 +1,4 @@
-var Setup = require('./setup');
+require('./setup');
 
 testSuite('if()', function() {
   var tpl, $el, user, outerFn, innerFn;
@@ -15,7 +15,7 @@ testSuite('if()', function() {
   describe("basic case", function() {
     beforeEach(function() {
       $el = $("<div id='box'>")
-        .appendTo("body")
+        .appendTo("#body")
         .html(
           "<div class='user'>" +
             "[" +
@@ -61,7 +61,7 @@ testSuite('if()', function() {
   describe("stopping and subtemplating", function() {
     beforeEach(function() {
       $el = $("<div id='box'>")
-        .appendTo("body")
+        .appendTo("#body")
         .html(
           "<div @if='attr(\"admin\")'>" +
             "<strong class='name' @text='attr(\"name\")'></strong>" +
