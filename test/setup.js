@@ -11,10 +11,6 @@ var multisuite = require('./support/multisuite');
 
 var jqVersions = ['jq-1.5', 'jq-1.9', 'jq-1.10', 'jq-2.0', 'zepto-1.0'];
 
-global.miniSuite = multisuite(['jq-1.10'], livemarkupEnv);
-global.fullSuite = multisuite(jqVersions, livemarkupEnv);
-global.testSuite = process.env.full ? fullSuite : miniSuite;
-
 var scripts = {
   'jq-1.5':     fs.readFileSync('./test/vendor/jquery-1.5.js'),
   'jq-1.9':     fs.readFileSync('./test/vendor/jquery-1.9.js'),
@@ -44,5 +40,13 @@ function livemarkupEnv(jq) {
       }
     });
   };
+}
+
+if (process.env.full) {
+  global.testSuite = multisuite(jqVersions, livemarkupEnv);
+} else {
+  before(livemarkupEnv('jq-1.10'));
+  beforeEach(function() { $('#body').html(''); });
+  global.testSuite = describe;
 }
 
