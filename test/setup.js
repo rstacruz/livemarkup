@@ -3,9 +3,6 @@ global.assert = require('chai').assert;
 global.expect = require('chai').expect;
 global.sinon = require('sinon');
 
-// Helpers
-require('./support/helpers');
-
 var fs = require('fs');
 var multisuite = require('./support/multisuite');
 
@@ -42,7 +39,7 @@ function livemarkupEnv(jq) {
   };
 }
 
-beforeEach(function() { $('#body').html(''); });
+require('./support/helpers');
 
 if (process.env.full) {
   global.testSuite = multisuite(jqVersions, livemarkupEnv);

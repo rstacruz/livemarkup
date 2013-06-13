@@ -1,9 +1,4 @@
-global.testSuite = function(name, fn) {
-  describe(name, function() {
-    beforeEach(function() { $("#body").html(''); });
-    fn.apply(this, []);
-  });
-};
+beforeEach(function() { $("#body").html(''); });
 
-global.require = function(fn) {
-};
+global.testSuite = describe;
+global.require = function(fn) {};

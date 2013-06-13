@@ -1,6 +1,12 @@
 (function() {
 
   /**
+   * Hooks
+   */
+
+  beforeEach(function() { $('#body').html(''); });
+
+  /**
    * Render HTML
    */
 
