@@ -82,7 +82,7 @@ testSuite('@each() arrays', function() {
       '<ul><li>male</li><li>female</li></ul></li>' +
       '<li><strong>Status</strong><ul><li>single</li><li>married</li></ul></li></ul>' ;
 
-      assert.equal($('body').html(), expected);
+      assert.equal($('#body').html(), expected);
     });
   });
 

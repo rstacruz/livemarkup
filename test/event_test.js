@@ -28,7 +28,7 @@ testSuite('events', function() {
 
   function setParent() {
     $parent = $("<p class='paragraph'>")
-      .appendTo("body")
+      .appendTo("#body")
       .html([
         '<span id="message" @text="on(\'eventname\') -> \'hello \' + Math.random()">',
         "</span>"

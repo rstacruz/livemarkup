@@ -1,4 +1,4 @@
-var Setup = require('./setup');
+if (typeof module === 'object') require('./setup');
 
 testSuite('attr()', function() {
   var tpl, $el, model;
@@ -65,7 +65,7 @@ testSuite('attr()', function() {
   };
 
   function render(html) {
-    $el = $("<div>").html(html).appendTo('body');
+    $el = $("<div>").html(html).appendTo('#body');
     tpl = LM($el).locals({ doc: model }).bind(model).render();
   }
 });

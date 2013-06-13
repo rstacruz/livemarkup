@@ -7,7 +7,7 @@ testSuite('directives', function() {
     beforeEach(function() {
       $parent = $("<div class='container'>")
         .html("<p><span id='message' @text='-> \"hello\"'></span></p>")
-        .appendTo("body");
+        .appendTo("#body");
 
       tpl = LM($parent).render();
     });
@@ -21,7 +21,7 @@ testSuite('directives', function() {
   describe("multiple", function() {
     beforeEach(function() {
       $parent = $("<div>")
-        .appendTo("body")
+        .appendTo("#body")
         .html(
           "<span id='name' @text='-> \"John\"'></span>" +
           "<em   id='age'  @text='-> \"20\"'></em>");

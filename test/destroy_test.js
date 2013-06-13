@@ -6,7 +6,7 @@ testSuite('destroy', function() {
   beforeEach(function() {
     user = new Backbone.Model({ name: "Kesha" });
 
-    $parent = $("<div id='box'>").appendTo('body').html(
+    $parent = $("<div id='box'>").appendTo('#body').html(
       "<span id='name' @text='attr(\"name\")'></span>"
     );
 

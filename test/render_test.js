@@ -7,7 +7,7 @@ testSuite('render', function() {
     helper = sinon.spy();
 
     $parent = $("<p class='paragraph'>")
-      .appendTo("body")
+      .appendTo("#body")
       .html("<span id='message' @text='-> helper()'></span>");
 
     tpl = new LM.template($parent)

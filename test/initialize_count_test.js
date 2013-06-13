@@ -11,7 +11,7 @@ testSuite('initialize count', function() {
 
     $parent = $("<p class='paragraph'>")
       .html("<span id='message' @text='attr(\"title\")'></span>")
-      .appendTo("body");
+      .appendTo("#body");
 
     tpl = new LM.template($parent)
       .bind(model)

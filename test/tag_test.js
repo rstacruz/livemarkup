@@ -5,7 +5,7 @@ testSuite('tag test', function() {
 
   beforeEach(function() {
     $parent = $("<p class='paragraph'>")
-      .appendTo("body")
+      .appendTo("#body")
       .html("<span id='message' @text='-> \"hey there\"'></span>");
 
     tpl = (new LM.template($parent)).render();
