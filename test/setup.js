@@ -6,23 +6,43 @@ global.sinon = require('sinon');
 // Helpers
 require('./support/helpers');
 
-var env = require('./support/env');
-var jqVersions = ['jquery-1.5', 'jquery-1.9', 'jquery-1.10', 'jquery-2.0', 'zepto-1.0'];
+var fs = require('fs');
+var multisuite = require('./support/multisuite');
 
-global.miniSuite = env.suite(['jquery-1.10'], livemarkupEnv);
-global.fullSuite = env.suite(jqVersions, livemarkupEnv);
+var jqVersions = ['jq-1.5', 'jq-1.9', 'jq-1.10', 'jq-2.0', 'zepto-1.0'];
+
+global.miniSuite = multisuite(['jq-1.10'], livemarkupEnv);
+global.fullSuite = multisuite(jqVersions, livemarkupEnv);
 global.testSuite = process.env.full ? fullSuite : miniSuite;
 
-function livemarkupEnv(jq) {
-  return env({
-    html: '<!doctype html><html><head></head><body><div id="body"></div></body></html>',
-    expose: ['Backbone', 'LM', 'jQuery', '$', '_'],
-    js: [
-      'test/vendor/'+jq+'.js',
-      'test/vendor/underscore-1.4.4.js',
-      'test/vendor/backbone-1.0.0.js',
-      'livemarkup.js' ]
-  });
-}
+var scripts = {
+  'jq-1.5':     fs.readFileSync('./test/vendor/jquery-1.5.js'),
+  'jq-1.9':     fs.readFileSync('./test/vendor/jquery-1.9.js'),
+  'jq-1.10':    fs.readFileSync('./test/vendor/jquery-1.10.js'),
+  'jq-2.0':     fs.readFileSync('./test/vendor/jquery-2.0.js'),
+  'zepto-1.0':  fs.readFileSync('./test/vendor/zepto-1.0.js'),
+  'underscore': fs.readFileSync('./test/vendor/underscore-1.4.4.js'),
+  'backbone':   fs.readFileSync('./test/vendor/backbone-1.0.0.js'),
+  'livemarkup': fs.readFileSync('./livemarkup.js')
+};
 
+function livemarkupEnv(jq) {
+  var jsdom = require('jsdom');
+  return function(done) {
+    jsdom.env({
+      html: '<!doctype html><html><head></head><body><div id="body"></div></body></html>',
+      src: [ scripts[jq], scripts.underscore, scripts.backbone, scripts.livemarkup ],
+      done: function(errors, window) {
+        window.console  = console;
+        global.window   = window;
+        global.Backbone = window.Backbone;
+        global.jQuery   = window.jQuery;
+        global.LM       = window.LM;
+        global.$        = window.$;
+        global._        = window._;
+        done(errors);
+      }
+    });
+  };
+}
 
