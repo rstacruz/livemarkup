@@ -6,10 +6,13 @@ global.sinon = require('sinon');
 var fs = require('fs');
 var multisuite = require('./support/multisuite');
 
-var jqVersions = ['jq-1.5', 'jq-1.9', 'jq-1.10', 'jq-2.0', 'zepto-1.0'];
+var jqVersions = ['jq-1.5', 'jq-1.6', 'jq-1.7', 'jq-1.8', 'jq-1.9', 'jq-1.10', 'jq-2.0', 'zepto-1.0'];
 
 var scripts = {
   'jq-1.5':     fs.readFileSync('./test/vendor/jquery-1.5.js'),
+  'jq-1.6':     fs.readFileSync('./test/vendor/jquery-1.6.js'),
+  'jq-1.7':     fs.readFileSync('./test/vendor/jquery-1.7.js'),
+  'jq-1.8':     fs.readFileSync('./test/vendor/jquery-1.8.js'),
   'jq-1.9':     fs.readFileSync('./test/vendor/jquery-1.9.js'),
   'jq-1.10':    fs.readFileSync('./test/vendor/jquery-1.10.js'),
   'jq-2.0':     fs.readFileSync('./test/vendor/jquery-2.0.js'),
