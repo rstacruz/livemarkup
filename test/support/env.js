@@ -1,5 +1,15 @@
 /**
  * Helper for initializing a jsdom environment.
+ *
+ *     var myenv = env({
+ *       html: '<!doctype html><html><head></head><body><div id="body"></div></body></html>',
+ *       expose: ['Backbone', 'jQuery', '$', '_'],
+ *       js: [
+ *         'test/vendor/jquery-1.9.js',
+ *         'livemarkup.js' ]
+ *     });
+ *
+ *     beforeEach(myenv);
  */
 
 // Dependencies (local)
@@ -39,8 +49,8 @@ function env(options) {
  * Creates a test suite function that uses permutations of the setup script
  * (made via `generator`).
  *
- *     env = function(version) { return function() { ... } };
- *     mysuite = suite(['a', 'b'], env);
+ *     gen = function(version) { return function() { ... } };
+ *     mysuite = env.suite(['a', 'b'], gen);
  *
  *     mysuite('event tests', function() {
  *       ....
