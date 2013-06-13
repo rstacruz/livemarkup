@@ -1,4 +1,4 @@
-if (typeof module === 'object') require('./setup');
+require('./setup');
 
 testSuite('@at()', function() {
   var tpl, $parent, model;

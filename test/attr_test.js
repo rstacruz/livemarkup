@@ -1,4 +1,4 @@
-if (typeof module === 'object') require('./setup');
+require('./setup');
 
 testSuite('attr()', function() {
   var tpl, $el, model;

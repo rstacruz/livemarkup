@@ -1,4 +1,4 @@
-if (typeof module === 'object') require('./setup');
+require('./setup');
 
 testSuite('backbone view test', function() {
   var tpl, $parent, model, view;

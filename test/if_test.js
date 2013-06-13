@@ -1,4 +1,4 @@
-var Setup = require('./setup');
+require('./setup');
 
 testSuite('if()', function() {
   var tpl, $el, user, outerFn, innerFn;

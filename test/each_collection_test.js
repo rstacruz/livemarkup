@@ -1,5 +1,4 @@
-
-var Setup = require('./setup');
+require('./setup');
 
 testSuite('@each() collections', function() {
   var User, Users, users, tpl;

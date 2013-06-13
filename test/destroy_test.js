@@ -1,4 +1,4 @@
-var Setup = require('./setup');
+require('./setup');
 
 testSuite('destroy', function() {
   var tpl, $parent, user;
