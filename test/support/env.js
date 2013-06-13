@@ -7,7 +7,7 @@ var jsdom = require('jsdom');
 var path = require('path');
 var fs = require('fs');
 
-module.exports = { env: env, suite: suite };
+module.exports = env;
 
 /**
  * Creates a function that spawns a jsdom environment when called.
@@ -36,17 +36,33 @@ function env(options) {
 }
 
 /**
- * Creates a test suite named `name` (with `prefix`), includes a `setup`
- * function, and runs `fn`.
+ * Creates a test suite function that uses permutations of the setup script
+ * (made via `generator`).
+ *
+ *     env = function(version) { return function() { ... } };
+ *     mysuite = suite(['a', 'b'], env);
+ *
+ *     mysuite('event tests', function() {
+ *       ....
+ *     });
  */
 
-function suite(name, prefix, setup, fn) {
-  if (prefix) name = prefix + ' ' + name;
-  describe(name, function() {
-    if (setup) beforeEach(setup);
-    fn.apply(this);
-  });
-}
+env.suite = function(variants, generator) {
+  return function(name, fn) {
+    variants.forEach(function(variant) {
+
+      var subname = name;
+      if (variants.length > 1) subname = variant.toString() + " " + subname;
+
+      describe(subname, function() {
+        var arr = variant.constructor === Array ? variant : [variant];
+        beforeEach(generator.apply(this, arr));
+        fn.apply(this);
+      });
+
+    });
+  };
+};
 
 /**
  * Creates a cache function (memoizer).

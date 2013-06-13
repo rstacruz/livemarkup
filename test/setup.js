@@ -6,25 +6,12 @@ global.sinon = require('sinon');
 // Helpers
 require('./support/helpers');
 
-var env   = require('./support/env').env;
-var suite = require('./support/env').suite;
+var env = require('./support/env');
+var jqVersions = ['jquery-1.5', 'jquery-1.9', 'jquery-1.10', 'jquery-2.0', 'zepto-1.0'];
 
-global.testSuite = function(name, fn) {
-  return process.env.full ?
-    fullSuite(name, fn) :
-    miniSuite(name, fn);
-};
-
-function miniSuite(name, fn) {
-  return suite(name, null, livemarkupEnv('jquery-1.10'), fn);
-}
-
-function fullSuite(name, fn) {
-  var versions = ['jquery-1.9', 'jquery-1.10', 'jquery-1.5', 'zepto-1.0', 'jquery-2.0'];
-  versions.forEach(function(jq) {
-    suite(name, jq, livemarkupEnv(jq), fn);
-  });
-}
+global.miniSuite = env.suite(['jquery-1.10'], livemarkupEnv);
+global.fullSuite = env.suite(jqVersions, livemarkupEnv);
+global.testSuite = process.env.full ? fullSuite : miniSuite;
 
 function livemarkupEnv(jq) {
   return env({
