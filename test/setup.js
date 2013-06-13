@@ -1,105 +1,41 @@
 // Dependencies (global)
 global.assert = require('chai').assert;
 global.expect = require('chai').expect;
-global.extend = require('util')._extend;
 global.sinon = require('sinon');
 
-// Dependencies (local)
-var jsdom = require('jsdom');
-var sourceCache = cache();
-
 // Helpers
-global.inspect = inspect;
-global.getFile = getFile;
-global.testSuite = testSuite;
-
 require('./support/helpers');
 
-/**
- * Returns a file's contents -- getFile('test/vendor/x.js')
- */
+var env   = require('./support/env').env;
+var suite = require('./support/env').suite;
 
-function getFile(filepath) {
-  var path = require('path');
-  var fs = require('fs');
-  return fs.readFileSync(path.resolve(__dirname, '..', filepath)).toString();
+global.testSuite = function(name, fn) {
+  return process.env.full ?
+    fullSuite(name, fn) :
+    miniSuite(name, fn);
+};
+
+function miniSuite(name, fn) {
+  return suite(name, null, livemarkupEnv('jquery-1.10'), fn);
 }
 
-/**
- * Inspects a given object's value
- */
-
-function inspect(obj) {
-  console.log('\n==> ', require('util').inspect(obj, { colors: true }));
-}
-
-/**
- * Runs a test context in multpile libs
- */
-
-function testSuite(name, fn) {
-  // Run in just the default environment
-  if (!process.env.full) {
-    describe(name, function() {
-      beforeEach(customEnv({ jquery: 'jquery-2.0' }));
-      fn.apply(this);
-    });
-  }
-
-  else {
-    var versions = ['jquery-1.9', 'jquery-1.10', 'jquery-1.5', 'zepto-1.0', 'jquery-2.0'];
-    versions.forEach(function(jq) {
-      describe(jq, function() {
-        beforeEach(customEnv({ jquery: jq }));
-        describe(name, fn);
-      });
-    });
-  }
-}
-
-/**
- * Returns a function that generates a custom jsdom env
- */
-
-function customEnv(src) {
-  var sources = sourceCache(src, function() {
-    return [
-      getFile('test/vendor/'+src.jquery+'.js'),
-      getFile('test/vendor/underscore-1.4.4.js'),
-      getFile('test/vendor/backbone-1.0.0.js'),
-      getFile('livemarkup.js')
-    ];
+function fullSuite(name, fn) {
+  var versions = ['jquery-1.9', 'jquery-1.10', 'jquery-1.5', 'zepto-1.0', 'jquery-2.0'];
+  versions.forEach(function(jq) {
+    suite(name, jq, livemarkupEnv(jq), fn);
   });
-
-  return function(done) {
-    jsdom.env({
-      html: '<!doctype html><html><head></head><body><div id="body"></div></body></html>',
-      src: sources,
-      done: function(errors, window) {
-        window.console = console;
-        extend(global, {
-          window   : window,
-          Backbone : window.Backbone,
-          LM       : window.LM,
-          $        : window.$,
-          _        : window._
-        });
-        done(errors);
-      }
-    });
-  };
 }
 
-/**
- * Creates a cache
- */
-
-function cache() {
-  var hash = {};
-  return function (key, fn) {
-    key = JSON.stringify(key);
-    if (!hash[key]) hash[key] = fn();
-    return hash[key];
-  };
+function livemarkupEnv(jq) {
+  return env({
+    html: '<!doctype html><html><head></head><body><div id="body"></div></body></html>',
+    expose: ['Backbone', 'LM', 'jQuery', '$', '_'],
+    js: [
+      'test/vendor/'+jq+'.js',
+      'test/vendor/underscore-1.4.4.js',
+      'test/vendor/backbone-1.0.0.js',
+      'livemarkup.js' ]
+  });
 }
+
 
