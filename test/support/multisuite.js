@@ -19,7 +19,7 @@ module.exports = function(variants, generator) {
 
       describe(subname, function() {
         var arr = variant.constructor === Array ? variant : [variant];
-        beforeEach(generator.apply(this, arr));
+        before(generator.apply(this, arr));
         fn.apply(this);
       });
 

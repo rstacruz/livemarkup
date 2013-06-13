@@ -42,11 +42,12 @@ function livemarkupEnv(jq) {
   };
 }
 
+beforeEach(function() { $('#body').html(''); });
+
 if (process.env.full) {
   global.testSuite = multisuite(jqVersions, livemarkupEnv);
 } else {
   before(livemarkupEnv('jq-1.10'));
-  beforeEach(function() { $('#body').html(''); });
   global.testSuite = describe;
 }
 
