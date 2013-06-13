@@ -41,13 +41,13 @@ function testSuite(name, fn) {
   // Run in just the default environment
   if (!process.env.full) {
     describe(name, function() {
-      beforeEach(customEnv({ jquery: 'jquery-2.0.2' }));
+      beforeEach(customEnv({ jquery: 'jquery-2.0' }));
       fn.apply(this);
     });
   }
 
   else {
-    var versions = ['jquery-1.9.1', 'jquery-1.10.1', 'jquery-1.5.2', 'zepto-1.0', 'jquery-2.0.2'];
+    var versions = ['jquery-1.9', 'jquery-1.10', 'jquery-1.5', 'zepto-1.0', 'jquery-2.0'];
     versions.forEach(function(jq) {
       describe(jq, function() {
         beforeEach(customEnv({ jquery: jq }));
