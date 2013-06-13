@@ -4,3 +4,6 @@ global.testSuite = function(name, fn) {
     fn.apply(this, []);
   });
 };
+
+global.require = function(fn) {
+};

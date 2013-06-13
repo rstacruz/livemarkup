@@ -13,7 +13,7 @@ testSuite('directives', function() {
     });
 
     it('should not be visible', function() {
-      var html = $('div').html();
+      var html = $('.container').html();
       assert.notMatch(html, /\@text/);
     });
   });
@@ -31,7 +31,7 @@ testSuite('directives', function() {
 
     it("should both work", function() {
       var expected = '<span id="name">John</span><em id="age">20</em>';
-      assert.equal($parent.html(), expected);
+      assert.htmlEqual($parent.html(), expected);
     });
 
     it("1st should work", function() {
